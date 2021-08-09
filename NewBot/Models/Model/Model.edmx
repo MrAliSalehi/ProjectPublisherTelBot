@@ -1,0 +1,357 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="telbotZB_dbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="admins">
+          <Key>
+            <PropertyRef Name="uID" />
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="uID" Type="int" Nullable="false" />
+          <Property Name="name" Type="text" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ADSList">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="uID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="GUID" Type="varchar" MaxLength="150" />
+          <Property Name="link" Type="varchar" MaxLength="450" />
+          <Property Name="discription" Type="nvarchar" MaxLength="500" />
+          <Property Name="pic" Type="varchar" MaxLength="100" />
+          <Property Name="IsPublished" Type="bit" />
+          <Property Name="OneLiner" Type="bit" />
+        </EntityType>
+        <EntityType Name="agents">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="agentuid" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="agentname" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="agentnumber" Type="text" Nullable="false" />
+          <Property Name="sellcount" Type="int" />
+          <Property Name="FreeBalance" Type="int" />
+          <Property Name="UsedBalance" Type="int" />
+        </EntityType>
+        <EntityType Name="HireList">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProjectID" Type="varchar" MaxLength="50" />
+          <Property Name="employeeID" Type="varchar" MaxLength="150" Nullable="false" />
+          <Property Name="FreeLancerID" Type="varchar" MaxLength="50" />
+          <Property Name="discription" Type="nvarchar" MaxLength="1000" />
+          <Property Name="checked" Type="bit" />
+          <Property Name="hirefinished" Type="bit" />
+          <Property Name="Disable" Type="bit" />
+          <Property Name="ChnnlMssgID" Type="varchar" MaxLength="250" />
+        </EntityType>
+        <EntityType Name="Images">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="uID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="UniqueID" Type="varchar" MaxLength="250" />
+          <Property Name="FileID" Type="varchar" MaxLength="350" />
+          <Property Name="Discription" Type="varchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="Projects">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProjectId" Type="varchar" MaxLength="50" />
+          <Property Name="uid" Type="varchar" MaxLength="150" Nullable="false" />
+          <Property Name="category" Type="nvarchar" MaxLength="250" />
+          <Property Name="dicription" Type="nvarchar" MaxLength="600" />
+          <Property Name="Checked" Type="bit" />
+          <Property Name="ProjectFinished" Type="bit" />
+          <Property Name="disable" Type="bit" />
+          <Property Name="ChnnlMssgID" Type="varchar" MaxLength="550" />
+        </EntityType>
+        <EntityType Name="users">
+          <Key>
+            <PropertyRef Name="PK" />
+          </Key>
+          <Property Name="PK" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="uID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="fullname" Type="nvarchar" MaxLength="250" />
+          <Property Name="number" Type="text" />
+          <Property Name="finishedregister" Type="bit" />
+          <Property Name="registermode" Type="text" />
+          <Property Name="registerstep" Type="tinyint" />
+          <Property Name="invcode" Type="text" />
+          <Property Name="agent" Type="int" />
+          <Property Name="projectstep" Type="tinyint" />
+          <Property Name="ishireing" Type="bit" />
+          <Property Name="EmployeeID" Type="varchar" MaxLength="50" />
+          <Property Name="adsStep" Type="tinyint" />
+          <Property Name="IsBanned" Type="bit" />
+          <Property Name="sendtoEMPmessageID" Type="varchar" MaxLength="50" />
+          <Property Name="DisableStep" Type="tinyint" />
+          <Property Name="AdsChance" Type="int" />
+          <Property Name="HireChance" Type="int" />
+          <Property Name="ProjectChance" Type="int" />
+        </EntityType>
+        <EntityContainer Name="telbotZB_dbModelStoreContainer">
+          <EntitySet Name="ADSList" EntityType="Self.ADSList" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="agents" EntityType="Self.agents" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HireList" EntityType="Self.HireList" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Images" EntityType="Self.Images" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Projects" EntityType="Self.Projects" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="admins" EntityType="Self.admins" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [admins].[uID] AS [uID], 
+    [admins].[name] AS [name]
+    FROM [dbo].[admins] AS [admins]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="telbotZB_dbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="agent">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="agentuid" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="agentname" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="agentnumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="sellcount" Type="Int32" />
+          <Property Name="FreeBalance" Type="Int32" />
+          <Property Name="UsedBalance" Type="Int32" />
+        </EntityType>
+        <EntityType Name="admin">
+          <Key>
+            <PropertyRef Name="uID" />
+            <PropertyRef Name="name" />
+          </Key>
+          <Property Name="uID" Type="Int32" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="telbotZB_dbEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="agents" EntityType="Self.agent" />
+          <EntitySet Name="admins" EntityType="Self.admin" />
+          <EntitySet Name="Projects" EntityType="telbotZB_dbModel.Project" />
+          <EntitySet Name="HireLists" EntityType="telbotZB_dbModel.HireList" />
+          <EntitySet Name="ADSLists" EntityType="telbotZB_dbModel.ADSList" />
+          <EntitySet Name="Images" EntityType="telbotZB_dbModel.Image" />
+          <EntitySet Name="users" EntityType="telbotZB_dbModel.user" />
+        </EntityContainer>
+        <EntityType Name="Project">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProjectId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="uid" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="category" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="dicription" Type="String" MaxLength="600" FixedLength="false" Unicode="true" />
+          <Property Name="Checked" Type="Boolean" />
+          <Property Name="ProjectFinished" Type="Boolean" />
+          <Property Name="disable" Type="Boolean" />
+          <Property Name="ChnnlMssgID" Type="String" MaxLength="550" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="HireList">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProjectID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="employeeID" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="FreeLancerID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="discription" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="checked" Type="Boolean" />
+          <Property Name="hirefinished" Type="Boolean" />
+          <Property Name="Disable" Type="Boolean" />
+          <Property Name="ChnnlMssgID" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ADSList">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="uID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="link" Type="String" MaxLength="450" FixedLength="false" Unicode="false" />
+          <Property Name="discription" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="pic" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="GUID" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="IsPublished" Type="Boolean" />
+          <Property Name="OneLiner" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="Image">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="uID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UniqueID" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="FileID" Type="String" MaxLength="350" FixedLength="false" Unicode="false" />
+          <Property Name="Discription" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="user">
+          <Key>
+            <PropertyRef Name="PK" />
+          </Key>
+          <Property Name="PK" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="uID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="fullname" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="number" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="finishedregister" Type="Boolean" />
+          <Property Name="registermode" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="registerstep" Type="Byte" />
+          <Property Name="invcode" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="agent" Type="Int32" />
+          <Property Name="projectstep" Type="Byte" />
+          <Property Name="ishireing" Type="Boolean" />
+          <Property Name="EmployeeID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="adsStep" Type="Byte" />
+          <Property Name="IsBanned" Type="Boolean" />
+          <Property Name="sendtoEMPmessageID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DisableStep" Type="Byte" />
+          <Property Name="AdsChance" Type="Int32" />
+          <Property Name="HireChance" Type="Int32" />
+          <Property Name="ProjectChance" Type="Int32" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="telbotZB_dbModelStoreContainer" CdmEntityContainer="telbotZB_dbEntities">
+          <EntitySetMapping Name="agents">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.agent">
+              <MappingFragment StoreEntitySet="agents">
+                <ScalarProperty Name="UsedBalance" ColumnName="UsedBalance" />
+                <ScalarProperty Name="FreeBalance" ColumnName="FreeBalance" />
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="agentuid" ColumnName="agentuid" />
+                <ScalarProperty Name="agentname" ColumnName="agentname" />
+                <ScalarProperty Name="agentnumber" ColumnName="agentnumber" />
+                <ScalarProperty Name="sellcount" ColumnName="sellcount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="admins">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.admin">
+              <MappingFragment StoreEntitySet="admins">
+                <ScalarProperty Name="uID" ColumnName="uID" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Projects">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.Project">
+              <MappingFragment StoreEntitySet="Projects">
+                <ScalarProperty Name="ChnnlMssgID" ColumnName="ChnnlMssgID" />
+                <ScalarProperty Name="disable" ColumnName="disable" />
+                <ScalarProperty Name="ProjectFinished" ColumnName="ProjectFinished" />
+                <ScalarProperty Name="Checked" ColumnName="Checked" />
+                <ScalarProperty Name="dicription" ColumnName="dicription" />
+                <ScalarProperty Name="category" ColumnName="category" />
+                <ScalarProperty Name="uid" ColumnName="uid" />
+                <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HireLists">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.HireList">
+              <MappingFragment StoreEntitySet="HireList">
+                <ScalarProperty Name="ChnnlMssgID" ColumnName="ChnnlMssgID" />
+                <ScalarProperty Name="Disable" ColumnName="Disable" />
+                <ScalarProperty Name="hirefinished" ColumnName="hirefinished" />
+                <ScalarProperty Name="checked" ColumnName="checked" />
+                <ScalarProperty Name="discription" ColumnName="discription" />
+                <ScalarProperty Name="FreeLancerID" ColumnName="FreeLancerID" />
+                <ScalarProperty Name="employeeID" ColumnName="employeeID" />
+                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ADSLists">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.ADSList">
+              <MappingFragment StoreEntitySet="ADSList">
+                <ScalarProperty Name="OneLiner" ColumnName="OneLiner" />
+                <ScalarProperty Name="IsPublished" ColumnName="IsPublished" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="pic" ColumnName="pic" />
+                <ScalarProperty Name="discription" ColumnName="discription" />
+                <ScalarProperty Name="link" ColumnName="link" />
+                <ScalarProperty Name="uID" ColumnName="uID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Images">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.Image">
+              <MappingFragment StoreEntitySet="Images">
+                <ScalarProperty Name="Discription" ColumnName="Discription" />
+                <ScalarProperty Name="FileID" ColumnName="FileID" />
+                <ScalarProperty Name="UniqueID" ColumnName="UniqueID" />
+                <ScalarProperty Name="uID" ColumnName="uID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="users">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.user">
+              <MappingFragment StoreEntitySet="users">
+                <ScalarProperty Name="ProjectChance" ColumnName="ProjectChance" />
+                <ScalarProperty Name="HireChance" ColumnName="HireChance" />
+                <ScalarProperty Name="AdsChance" ColumnName="AdsChance" />
+                <ScalarProperty Name="DisableStep" ColumnName="DisableStep" />
+                <ScalarProperty Name="sendtoEMPmessageID" ColumnName="sendtoEMPmessageID" />
+                <ScalarProperty Name="IsBanned" ColumnName="IsBanned" />
+                <ScalarProperty Name="adsStep" ColumnName="adsStep" />
+                <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
+                <ScalarProperty Name="ishireing" ColumnName="ishireing" />
+                <ScalarProperty Name="projectstep" ColumnName="projectstep" />
+                <ScalarProperty Name="agent" ColumnName="agent" />
+                <ScalarProperty Name="invcode" ColumnName="invcode" />
+                <ScalarProperty Name="registerstep" ColumnName="registerstep" />
+                <ScalarProperty Name="registermode" ColumnName="registermode" />
+                <ScalarProperty Name="finishedregister" ColumnName="finishedregister" />
+                <ScalarProperty Name="number" ColumnName="number" />
+                <ScalarProperty Name="fullname" ColumnName="fullname" />
+                <ScalarProperty Name="uID" ColumnName="uID" />
+                <ScalarProperty Name="PK" ColumnName="PK" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
