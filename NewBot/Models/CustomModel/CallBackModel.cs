@@ -13,7 +13,7 @@ namespace NewBot.Models.CustomModel
         public string id { get; set; }
         public string ProjectTosend { get; set; }
         [DefaultValue("none")]
-        public string Image { get; set; }
+        public string Image { get; set; } = "";
         [DefaultValue("")]
         public string StartIndex { get; set; }
         public enum GetProjectType

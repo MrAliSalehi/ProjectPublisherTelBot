@@ -439,13 +439,14 @@ namespace NewBot
                         var getproj = controller.GetUserProject(new Project() { ProjectId = CallInfo[1], uid = CallInfo[0] });
 
                         #region ProjectText
-                        string FinalProject = $@"#پروژه
+                        string tx = $@"#پروژه
 
 کد اگهی:{getproj.ProjectId}
 
-دسته بندی:#{getproj.category}
+دسته بندی:\#{getproj.category}
 
 توضیحات:{getproj.dicription}";
+                        string FinalProject = $"#پروژه \nکد اگهی: #{getproj.ProjectId} \n دسته بندی: #{getproj.category} \nتوضیحات:\n {getproj.dicription}";
                         #endregion
 
                         var sendtochannel = bot.SendTextMessageAsync(ForceJoinChannelID, FinalProject, replyMarkup: Accept);
@@ -954,8 +955,7 @@ namespace NewBot
                     }
                     else
                     {
-                        bot.SendTextMessageAsync(id, "شما نمیتوانید از کاراکتر های غیر مجاز استفاده کنید)\n نماد ها مجاز به استفاده نیستند");
-                        return false;
+                        return true;
                     }
                 }
                 else
@@ -1230,9 +1230,52 @@ namespace NewBot
                                 }
                                 break;
                             #endregion
+
                             #region RePublish Ads,Hire,Project
                             case 5:
-                                
+                                string GetTag = e.Message.Text;
+                                if (e.Message.Text.StartsWith("#"))
+                                {
+                                    GetTag.Remove(0, 1);
+                                }
+                                var SearchForTag = controller.SearchTag(GetTag);
+                                if (SearchForTag == null || SearchForTag.TagIdentifier == TagType.Null)
+                                {
+                                    await bot.SendTextMessageAsync(e.Message.From.Id, "تگی که به دنبال ان میگردید پیدا نشد");
+                                }
+                                else
+                                {
+                                    switch (SearchForTag.TagIdentifier)
+                                    {
+                                        case TagType.Project:
+                                            await bot.SendTextMessageAsync(e.Message.From.Id, "پروژه شما پیدا شد و پس از تایید توسط ادمین در کانال قرار خواهد گرفت");
+                                            if (user.ProjectChance > 0)
+                                            {
+                                                SendToAdmins(
+                                                    ProjectMode.Project,
+                                                    ButtonMode.AcceptBlockReject,
+                                                    new CallBackModel()
+                                                    {
+                                                        id = e.Message.From.Id.ToString(),
+                                                        tag = e.Message.Text,
+                                                        ProjectTosend = $"Category: [{SearchForTag.Category}#]\n Discription: [{SearchForTag.Discription}]"
+                                                    });
+                                            }
+                                            else
+                                            {
+                                                await bot.SendTextMessageAsync(e.Message.From.Id, "موجودی شما کافی نیست");
+                                            }
+                                            break;
+                                        case TagType.Hire:
+                                            break;
+                                        case TagType.Ads:
+                                            break;
+                                        case TagType.Null:
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
                                 break;
                             #endregion
                             default:
@@ -1399,7 +1442,7 @@ namespace NewBot
             //$"{callback.id}:{callback.ProjectTosend};{callback.Image}>{callback.StartIndex}"
             string AdsCallBack = $"{callback.id}:{callback.Image};{callback.StartIndex}";
             string HireCallBack = "";
-            string ProjectCallBack = "";
+            string ProjectCallBack = $"{callback.id}:{callback.tag};";
             string FinalCallBack = "";
             switch (projectMode)
             {
@@ -1440,14 +1483,26 @@ namespace NewBot
                 foreach (var admin in AdminsList)
                 {
                     await bot.SendTextMessageAsync(admin.uID, $"Dear {admin.name}\n New Project Request:");
-                    if (callback.Image.StartsWith("none>"))
+                    switch (projectMode)
                     {
-                        await bot.SendTextMessageAsync(admin.uID, callback.ProjectTosend, replyMarkup: AdminController);
-                    }
-                    else
-                    {
-                        var getIMG = controller.GetImage(new Models.Model.Image() { uID = callback.id, UniqueID = callback.Image });
-                        await bot.SendPhotoAsync(admin.uID, getIMG.FileID, callback.ProjectTosend, replyMarkup: AdminController);
+                        case ProjectMode.Project:
+                            await bot.SendTextMessageAsync(admin.uID, callback.ProjectTosend, replyMarkup: AdminController);
+                            break;
+                        case ProjectMode.Hire:
+                            break;
+                        case ProjectMode.Ads:
+                            if (callback.Image.StartsWith("none>"))
+                            {
+                                await bot.SendTextMessageAsync(admin.uID, callback.ProjectTosend, replyMarkup: AdminController);
+                            }
+                            else
+                            {
+                                var getIMG = controller.GetImage(new Models.Model.Image() { uID = callback.id, UniqueID = callback.Image });
+                                await bot.SendPhotoAsync(admin.uID, getIMG.FileID, callback.ProjectTosend, replyMarkup: AdminController);
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
             }

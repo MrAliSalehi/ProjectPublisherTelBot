@@ -995,21 +995,84 @@ namespace NewBot.Models.Controller
             {
                 using (var db = new telbotZB_dbEntities())
                 {
+                    #region Search Tag Inside Tables
+                    #region Get Tables
                     var FindInProjects = db.Projects.Where(p => p.ProjectId == Tag).SingleOrDefault();
                     var FindInHireList = db.HireLists.Where(p => p.ProjectID == Tag).SingleOrDefault();
                     var FindInADSList = db.ADSLists.Where(p => p.GUID == Tag).SingleOrDefault();
-                    List<object> SearchResult = new List<object>() { FindInADSList, FindInHireList, FindInProjects };
+                    #endregion
+
+                    #region Search
+                    List<object> SearchResult = new List<object>() { FindInProjects, FindInHireList, FindInADSList };
                     int FindIndex = 404;
+                    int i = 0;
                     foreach (var res in SearchResult)
                     {
                         if (res != null)
                         {
-                            
+                            FindIndex = i;
+                            break;
                         }
+                        i++;
                     }
+                    #endregion
+                    #endregion
+
+                    #region Return OutPut
                     TagViewModel OutPut = new TagViewModel() { };
+                    switch (i)
+                    {
+                        #region Tag Not Found
+                        case 404:
+                            OutPut.TagIdentifier = TagType.Null;
+                            break;
+                        #endregion
+
+                        #region Tag Is Project
+                        case 0:
+                            OutPut = new TagViewModel()
+                            {
+                                Category = FindInProjects.category,
+                                Discription = FindInProjects.dicription,
+                                Tag = FindInProjects.ProjectId,
+                                ID = FindInProjects.ID,
+                                TagIdentifier = TagType.Project
+                            };
+                            break;
+                        #endregion
+
+                        #region Tag Is Hire
+                        case 1:
+                            OutPut = new TagViewModel()
+                            {
+                                Discription = FindInHireList.discription,
+                                Tag = FindInHireList.ProjectID,
+                                ID = FindInHireList.ID,
+                                TagIdentifier = TagType.Hire
+                            };
+                            break;
+                        #endregion
+
+                        #region Tag Is Ads
+                        case 2:
+                            OutPut = new TagViewModel()
+                            {
+                                Discription = FindInADSList.discription,
+                                Tag = FindInADSList.GUID,
+                                ID = FindInADSList.ID,
+                                Link = FindInADSList.link,
+                                Pic = FindInADSList.pic == null ? null : FindInADSList.pic,
+                                TagIdentifier = TagType.Ads
+                            };
+                            break;
+                        #endregion
+                        default:
+                            OutPut.TagIdentifier = TagType.Null;
+                            break;
+                    }
+                    return OutPut;
+                    #endregion
                 }
-                return null;
             }
             catch (Exception)
             {
