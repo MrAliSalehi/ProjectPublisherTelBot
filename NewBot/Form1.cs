@@ -918,7 +918,7 @@ namespace NewBot
                                         await bot.SendTextMessageAsync(userinfo.EmployeeID,
                                             $"شما درخواست جدیدی برای همکاری دارید:\n\n{e.Message.Text}",
                                             replyMarkup: connect);
-                                        await bot.SendTextMessageAsync(e.Message.From.Id, "پیام شما برای کارفرما ارسال شد");
+                                        await bot.SendTextMessageAsync(e.Message.From.Id, "پیام شما برای کارفرما ارسال شد",replyMarkup:ProfileMenuRKM);
                                         controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), sendtoEMPmessageID = "" });
                                     }
                                 }
@@ -1301,11 +1301,15 @@ namespace NewBot
 
                             #region RePublish Ads,Hire,Project
                             case 5:
+                                #region Remove Tag
                                 string GetTag = e.Message.Text;
                                 if (e.Message.Text.StartsWith("#"))
                                 {
                                     GetTag = GetTag.Replace("#", "");
                                 }
+                                #endregion
+
+                                #region Tag Not Exists
                                 var SearchForTag = controller.SearchTag(GetTag);
                                 if (SearchForTag == null || SearchForTag.TagIdentifier == TagType.Null)
                                 {
@@ -1313,11 +1317,15 @@ namespace NewBot
                                     controller.UpdateUser(new user()
                                     { uID = e.Message.From.Id.ToString(), adsStep = 0 });
                                 }
+                                #endregion
+
+                                #region Tag Exists
                                 else
                                 {
                                     await bot.SendTextMessageAsync(e.Message.From.Id, "پروژه شما پیدا شد و پس از تایید توسط ادمین در کانال قرار خواهد گرفت", replyMarkup: RegisteredUsersRKM);
                                     switch (SearchForTag.TagIdentifier)
                                     {
+                                        #region Project
                                         case TagType.Project:
                                             SendToAdmins(
                                                 ProjectMode.Project,
@@ -1331,7 +1339,9 @@ namespace NewBot
                                             controller.UpdateUser(new user()
                                             { uID = e.Message.From.Id.ToString(), adsStep = 0 });
                                             break;
+                                        #endregion
 
+                                        #region Hire
                                         case TagType.Hire:
 
                                             SendToAdmins(
@@ -1347,6 +1357,9 @@ namespace NewBot
                                             controller.UpdateUser(new user()
                                             { uID = e.Message.From.Id.ToString(), adsStep = 0 });
                                             break;
+                                        #endregion
+
+                                        #region Ads
                                         case TagType.Ads:
                                             SendToAdmins(
                                                 ProjectMode.Ads,
@@ -1360,10 +1373,13 @@ namespace NewBot
                                             controller.UpdateUser(new user()
                                             { uID = e.Message.From.Id.ToString(), adsStep = 0 });
                                             break;
+
+                                        #endregion
                                         default:
                                             break;
                                     }
                                 }
+                                #endregion
                                 break;
                             #endregion
                             default:
