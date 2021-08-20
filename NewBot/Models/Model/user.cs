@@ -33,5 +33,6 @@ namespace NewBot.Models.Model
         public Nullable<int> AdsChance { get; set; }
         public Nullable<int> HireChance { get; set; }
         public Nullable<int> ProjectChance { get; set; }
+        public Nullable<byte> freeChance { get; set; }
     }
 }

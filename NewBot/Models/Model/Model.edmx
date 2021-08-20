@@ -101,6 +101,7 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <Property Name="AdsChance" Type="int" />
           <Property Name="HireChance" Type="int" />
           <Property Name="ProjectChance" Type="int" />
+          <Property Name="freeChance" Type="tinyint" />
         </EntityType>
         <EntityContainer Name="telbotZB_dbModelStoreContainer">
           <EntitySet Name="ADSList" EntityType="Self.ADSList" Schema="dbo" store:Type="Tables" />
@@ -223,6 +224,7 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <Property Name="AdsChance" Type="Int32" />
           <Property Name="HireChance" Type="Int32" />
           <Property Name="ProjectChance" Type="Int32" />
+          <Property Name="freeChance" Type="Byte" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -309,6 +311,7 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <EntitySetMapping Name="users">
             <EntityTypeMapping TypeName="telbotZB_dbModel.user">
               <MappingFragment StoreEntitySet="users">
+                <ScalarProperty Name="freeChance" ColumnName="freeChance" />
                 <ScalarProperty Name="ProjectChance" ColumnName="ProjectChance" />
                 <ScalarProperty Name="HireChance" ColumnName="HireChance" />
                 <ScalarProperty Name="AdsChance" ColumnName="AdsChance" />
