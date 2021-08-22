@@ -15,6 +15,30 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <Property Name="uID" Type="int" Nullable="false" />
           <Property Name="name" Type="text" Nullable="false" />
         </EntityType>
+        <EntityType Name="AdsChannel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="uID" Type="varchar" MaxLength="150" Nullable="false" />
+          <Property Name="ProjectID" Type="varchar" MaxLength="90" />
+          <Property Name="Link" Type="varchar" MaxLength="250" />
+          <Property Name="Disciption" Type="varchar" MaxLength="350" />
+          <Property Name="IsChannel" Type="bit" />
+          <Property Name="Published" Type="bit" />
+        </EntityType>
+        <EntityType Name="AdsGroup">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="uID" Type="varchar" MaxLength="150" Nullable="false" />
+          <Property Name="ProjectID" Type="varchar" MaxLength="70" />
+          <Property Name="Link" Type="varchar" MaxLength="250" />
+          <Property Name="Disciption" Type="varchar" MaxLength="350" />
+          <Property Name="IsGroup" Type="bit" />
+          <Property Name="Published" Type="bit" />
+        </EntityType>
         <EntityType Name="ADSList">
           <Key>
             <PropertyRef Name="ID" />
@@ -104,6 +128,8 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <Property Name="freeChance" Type="tinyint" />
         </EntityType>
         <EntityContainer Name="telbotZB_dbModelStoreContainer">
+          <EntitySet Name="AdsChannel" EntityType="Self.AdsChannel" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AdsGroup" EntityType="Self.AdsGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ADSList" EntityType="Self.ADSList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="agents" EntityType="Self.agents" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HireList" EntityType="Self.HireList" Schema="dbo" store:Type="Tables" />
@@ -149,6 +175,8 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <EntitySet Name="ADSLists" EntityType="telbotZB_dbModel.ADSList" />
           <EntitySet Name="Images" EntityType="telbotZB_dbModel.Image" />
           <EntitySet Name="users" EntityType="telbotZB_dbModel.user" />
+          <EntitySet Name="AdsChannels" EntityType="telbotZB_dbModel.AdsChannel" />
+          <EntitySet Name="AdsGroups" EntityType="telbotZB_dbModel.AdsGroup" />
         </EntityContainer>
         <EntityType Name="Project">
           <Key>
@@ -225,6 +253,30 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <Property Name="HireChance" Type="Int32" />
           <Property Name="ProjectChance" Type="Int32" />
           <Property Name="freeChance" Type="Byte" />
+        </EntityType>
+        <EntityType Name="AdsChannel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="uID" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Link" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Disciption" Type="String" MaxLength="350" FixedLength="false" Unicode="false" />
+          <Property Name="IsChannel" Type="Boolean" />
+          <Property Name="Published" Type="Boolean" />
+          <Property Name="ProjectID" Type="String" MaxLength="90" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="AdsGroup">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="uID" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Link" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Disciption" Type="String" MaxLength="350" FixedLength="false" Unicode="false" />
+          <Property Name="IsGroup" Type="Boolean" />
+          <Property Name="Published" Type="Boolean" />
+          <Property Name="ProjectID" Type="String" MaxLength="70" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -331,6 +383,32 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
                 <ScalarProperty Name="fullname" ColumnName="fullname" />
                 <ScalarProperty Name="uID" ColumnName="uID" />
                 <ScalarProperty Name="PK" ColumnName="PK" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AdsChannels">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.AdsChannel">
+              <MappingFragment StoreEntitySet="AdsChannel">
+                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+                <ScalarProperty Name="Published" ColumnName="Published" />
+                <ScalarProperty Name="IsChannel" ColumnName="IsChannel" />
+                <ScalarProperty Name="Disciption" ColumnName="Disciption" />
+                <ScalarProperty Name="Link" ColumnName="Link" />
+                <ScalarProperty Name="uID" ColumnName="uID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AdsGroups">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.AdsGroup">
+              <MappingFragment StoreEntitySet="AdsGroup">
+                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+                <ScalarProperty Name="Published" ColumnName="Published" />
+                <ScalarProperty Name="IsGroup" ColumnName="IsGroup" />
+                <ScalarProperty Name="Disciption" ColumnName="Disciption" />
+                <ScalarProperty Name="Link" ColumnName="Link" />
+                <ScalarProperty Name="uID" ColumnName="uID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -32,5 +32,7 @@ namespace NewBot.Models.Model
         public virtual DbSet<ADSList> ADSLists { get; set; }
         public virtual DbSet<Image> Images { get; set; }
         public virtual DbSet<user> users { get; set; }
+        public virtual DbSet<AdsChannel> AdsChannels { get; set; }
+        public virtual DbSet<AdsGroup> AdsGroups { get; set; }
     }
 }

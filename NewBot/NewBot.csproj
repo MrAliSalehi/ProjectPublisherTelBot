@@ -80,10 +80,17 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Controller\DbController.cs" />
+    <Compile Include="Models\CustomModel\AdsModel.cs" />
     <Compile Include="Models\CustomModel\CallBackModel.cs" />
     <Compile Include="Models\CustomModel\MessageDataViewModel.cs" />
     <Compile Include="Models\CustomModel\TagViewModel.cs" />
     <Compile Include="Models\Model\admin.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Model\AdsChannel.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Model\AdsGroup.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Model\ADSList.cs">

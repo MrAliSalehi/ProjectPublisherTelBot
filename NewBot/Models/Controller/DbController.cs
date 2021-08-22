@@ -779,6 +779,128 @@ namespace NewBot.Models.Controller
 
         #region Ads CUID
 
+        #region SelctionController
+        public async Task<AdsOutPutModel> AdsAsync(AdsModel model)
+        {
+            var Out = new AdsOutPutModel();
+            using (var db = new telbotZB_dbEntities())
+            {
+                switch (model.AdsType)
+                {
+                    #region Channel
+                    case AdsType.Channel:
+                        switch (model.AdsOperation)
+                        {
+                            case AdsOperation.Get:
+                                break;
+                            case AdsOperation.Insert:
+                                break;
+                            case AdsOperation.Update:
+                                break;
+                            case AdsOperation.Delete:
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    #endregion
+
+                    #region Group
+                    case AdsType.Group:
+                        Out.AdsType = AdsType.Group;
+                        if (model.AdsGroup != null)
+                        {
+                            switch (model.AdsOperation)
+                            {
+                                #region Get
+                                case AdsOperation.Get:
+                                    break;
+                                #endregion
+
+                                #region Insert
+                                case AdsOperation.Insert:
+                                    db.AdsGroups.Add(new AdsGroup() { uID = model.AdsGroup.uID, ProjectID = model.AdsGroup.ProjectID });
+                                    await db.SaveChangesAsync();
+                                    Out.OutPutType = OutPutType.BOOL;
+                                    Out.OutPut = true;
+                                    break;
+                                #endregion
+
+                                #region Update
+                                case AdsOperation.Update:
+                                    var find = await db.AdsGroups.SingleOrDefaultAsync(p =>
+                                        p.uID == model.AdsGroup.uID && p.ProjectID == model.AdsGroup.ProjectID);
+                                    Out.OutPutType = OutPutType.BOOL;
+                                    if (find != null)
+                                    {
+                                        if (model.AdsGroup.Disciption != null)
+                                        {
+                                            find.Disciption = model.AdsGroup.Disciption;
+                                        }
+                                        if (model.AdsGroup.Link != null)
+                                        {
+                                            find.Link = model.AdsGroup.Link;
+                                        }
+                                        if (model.AdsGroup.IsGroup != null)
+                                        {
+                                            find.IsGroup = model.AdsGroup.IsGroup;
+                                        }
+                                        if (model.AdsGroup.Published != null)
+                                        {
+                                            find.Published = model.AdsGroup.Published;
+                                        }
+                                        await db.SaveChangesAsync();
+                                        Out.OutPut = true;
+                                    }
+                                    else
+                                    {
+                                        Out.OutPut = false;
+                                    }
+                                    break;
+                                #endregion
+
+                                #region Delete
+                                case AdsOperation.Delete:
+                                    break;
+                                #endregion
+
+                                #region Default
+                                default:
+                                    break;
+                                    #endregion
+                            }
+                        }
+                        break;
+
+                    #endregion
+
+                    #region Business
+                    case AdsType.Business:
+                        switch (model.AdsOperation)
+                        {
+                            case AdsOperation.Get:
+                                break;
+                            case AdsOperation.Insert:
+                                break;
+                            case AdsOperation.Update:
+                                break;
+                            case AdsOperation.Delete:
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    #endregion
+
+                    default:
+                        break;
+                }
+            }
+
+            return Out;
+        }
+        #endregion
+
         #region Get
         public List<ADSList> GetUserAdsList(ADSList ads)
         {

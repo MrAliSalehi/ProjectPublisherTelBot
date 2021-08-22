@@ -10,6 +10,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using NewBot.Models.Model;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using NewBot.Models.CustomModel;
 using static NewBot.Models.CustomModel.CallBackModel;
 namespace NewBot
@@ -42,78 +43,74 @@ namespace NewBot
         #region Public Variables
         public string ForceJoinChannelID = "@testbottel_qwxp";
         public bool forceJoin = false;
-        public string[] Categories = new string[] { "برنامه نویسی", "برنامه نویسی پایتون", "برنامه نویسی سی شارپ", "کامپیوتر", "برنامه نویس", "کمک آموزشی", "برنامه نویسی", "وبسایت", "تولید محتوا", "نگارش", "نویسندگی", "تایپ", "ترجمه", "زبان", "معماری", "طراحی", "گرافیک", "لوگو" };
+        public string[] Categories = new[] { "برنامه نویسی", "برنامه نویسی پایتون", "برنامه نویسی سی شارپ", "کامپیوتر", "برنامه نویس", "کمک آموزشی", "برنامه نویسی", "وبسایت", "تولید محتوا", "نگارش", "نویسندگی", "تایپ", "ترجمه", "زبان", "معماری", "طراحی", "گرافیک", "لوگو" };
         public string Tagg;
-        public bool IsHireRequest = false;
         #endregion
 
         #region Keyboards
         #region Buttons
 
         #region Public Buttons
-        public static KeyboardButton[][] mainBTN = new KeyboardButton[][] { new KeyboardButton[] { new KeyboardButton("ثبت نام") } };
-        public static KeyboardButton[][] CancelBTN = new KeyboardButton[][] { new KeyboardButton[] { new KeyboardButton("انصراف") } };
-        public static KeyboardButton[][] startproccessBTN = new KeyboardButton[][] { new KeyboardButton[] { new KeyboardButton("قوانین را خواندم و میپذیرم") } };
-        public static KeyboardButton[][] RegisteredUsersBTN = new KeyboardButton[][] {
-            new KeyboardButton[] {
+        public static KeyboardButton[][] mainBTN = new[] { new[] { new KeyboardButton("ثبت نام") } };
+        public static KeyboardButton[][] CancelBTN = new[] { new[] { new KeyboardButton("انصراف") } };
+        public static KeyboardButton[][] startproccessBTN = new[] { new[] { new KeyboardButton("قوانین را خواندم و میپذیرم") } };
+        public static KeyboardButton[][] RegisteredUsersBTN = new[]
+        {
+            new[] {
                 new KeyboardButton("اگهی پروژه"),
                 new KeyboardButton("اگهی استخدام"),
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("اگهی تبلیغاتی")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("لینک دعوت"),
                 new KeyboardButton("پروفایل من")
             }
         };
-        public static KeyboardButton[][] AdsBTN = new KeyboardButton[][] {
-            new KeyboardButton[] {
-                new KeyboardButton("تبلیغ کانال و گروه"),
-            },
-            new KeyboardButton[]
-            {
-                new KeyboardButton("تبلیغ کسب و کار")
-            },
-            new KeyboardButton[]
-            {
-                new KeyboardButton("بازگشت به صفحه اصلی")
-            }
+        public static KeyboardButton[][] AdsBTN = new[]
+        {
+            new[] {new KeyboardButton("تبلیغ کانال") },
+            new[] {new KeyboardButton("تبلیغ گروه") },
+            new[] {new KeyboardButton("تبلیغ کسب و کار") },
+            new[] {new KeyboardButton("بازگشت به صفحه اصلی") }
         };
         #endregion
 
         #region Profile Buttons
 
         #region Select Buttons
-        public static KeyboardButton[][] ProfileMenuBTN = new KeyboardButton[][] {
-            new KeyboardButton[] {
+        public static KeyboardButton[][] ProfileMenuBTN = new[]
+        {
+            new[] {
                 new KeyboardButton("اگهی های من"),
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("بخش مالی")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("برگشت به صفحه اصلی")
             }
         };
-        public static KeyboardButton[][] SelectTypeBTN = new KeyboardButton[][] {
-            new KeyboardButton[] {
+        public static KeyboardButton[][] SelectTypeBTN = new[]
+        {
+            new[] {
                 new KeyboardButton("پروژه"),
                 new KeyboardButton("استخدام"),
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("تبلیغات")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("انتشار مجدد اگهی")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("بازگشت به پروفایل")
             }
@@ -121,15 +118,16 @@ namespace NewBot
         #endregion
 
         #region Fiscal Department
-        public static KeyboardButton[][] FiscalMenuBTN = new KeyboardButton[][] {
-            new KeyboardButton[] {
+        public static KeyboardButton[][] FiscalMenuBTN = new[]
+        {
+            new[] {
                 new KeyboardButton("اطلاعات حساب من"),
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("افزایش موجودی")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("خروج از بخش مالی")
             }
@@ -137,65 +135,69 @@ namespace NewBot
         #endregion
 
         #region Profile Project Buttons
-        public static KeyboardButton[][] ProjectHndlrBTN = new KeyboardButton[][] {
-            new KeyboardButton[] {
+        public static KeyboardButton[][] ProjectHndlrBTN = new[]
+        {
+            new[] {
                 new KeyboardButton("مشاهده تمام پروژه ها")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("غیر فعال کردن پروژه")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("برگشت به اگهی ها")
             }
         };
-        public static KeyboardButton[][] SelectProjectBTN = new KeyboardButton[][] {
-            new KeyboardButton[] {
+        public static KeyboardButton[][] SelectProjectBTN = new[]
+        {
+            new[] {
                 new KeyboardButton("انتخاب از لیست پروژه ها")
             },
-            new KeyboardButton[] {
+            new[] {
                 new KeyboardButton("غیرفعال کردن اگهی پروژه از طریق هشتک")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("انصراف")
             }
         };
-        public static KeyboardButton[][] CancelDisableProjectBTN = new KeyboardButton[][] { new KeyboardButton[] { new KeyboardButton("انصراف از غیر فعال سازی پروژه") } };
+        public static KeyboardButton[][] CancelDisableProjectBTN = new[] { new[] { new KeyboardButton("انصراف از غیر فعال سازی پروژه") } };
         #endregion
 
         #region Profile Hire Buttons
-        public static KeyboardButton[][] HireHndlrBTN = new KeyboardButton[][] {
-            new KeyboardButton[] {
+        public static KeyboardButton[][] HireHndlrBTN = new[]
+        {
+            new[] {
                 new KeyboardButton("مشاهده تمام اگهی های استخدام")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("غیر فعال کردن اگهی استخدام")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("برگشت")
             }
         };
-        public static KeyboardButton[][] SelectHireBTN = new KeyboardButton[][] {
-            new KeyboardButton[] {
+        public static KeyboardButton[][] SelectHireBTN = new[]
+        {
+            new[] {
                 new KeyboardButton("انتخاب از لیست اگهی های استخدام")
             },
-            new KeyboardButton[] {
+            new[] {
                 new KeyboardButton("غیرفعال کردن اگهی استخدام از طریق هشتک")
             },
-            new KeyboardButton[]
+            new[]
             {
                 new KeyboardButton("منصرف شدم")
             }
         };
-        public static KeyboardButton[][] CancelDisableHireProjectBTN = new KeyboardButton[][] { new KeyboardButton[] { new KeyboardButton("انصراف از غیر فعال سازی اگهی استخدام") } };
+        public static KeyboardButton[][] CancelDisableHireProjectBTN = new[] { new[] { new KeyboardButton("انصراف از غیر فعال سازی اگهی استخدام") } };
         #endregion
 
         #region Profile Ads Buttons
-        public static KeyboardButton[][] AdsOptionsButtons = new KeyboardButton[][] { new KeyboardButton[] { new KeyboardButton("بازگشت از قسمت تبلیغات"), new KeyboardButton("مشاهده لیست تبلیغات") } };
+        public static KeyboardButton[][] AdsOptionsButtons = new[] { new[] { new KeyboardButton("بازگشت از قسمت تبلیغات"), new KeyboardButton("مشاهده لیست تبلیغات") } };
         #endregion
         #endregion
 
@@ -486,7 +488,7 @@ namespace NewBot
                             MessageText = e.CallbackQuery.Message.Text,
                         },
                             ContentType.none, ContentStatus.none, ContentMessageType.custom);
-                        bot.SendTextMessageAsync(ForceJoinChannelID, txtToSend);
+                        await bot.SendTextMessageAsync(ForceJoinChannelID, txtToSend);
                     }
 
                     #endregion
@@ -787,7 +789,7 @@ namespace NewBot
                                     msgType: CallInfo[1].StartsWith("none>")
                                         ? ContentMessageType.Text
                                         : ContentMessageType.Caption);
-                                bot.SendTextMessageAsync(CallInfo[0], "اگهی تبلیغاتی شما توسط ادمین تایید شد",
+                                await bot.SendTextMessageAsync(CallInfo[0], "اگهی تبلیغاتی شما توسط ادمین تایید شد",
                                     replyMarkup: RegisteredUsersRKM);
                                 controller.UpdateUser(new user() { uID = CallInfo[0], adsStep = 0 });
                                 if (CallInfo[1].StartsWith("none>"))
@@ -795,20 +797,20 @@ namespace NewBot
                                     string[] adsplit = CallInfo[1].Split('>');
                                     var getad = controller.GetAds(
                                         new ADSList() { uID = CallInfo[0], GUID = adsplit[1] });
-                                    bot.SendTextMessageAsync(ForceJoinChannelID, $"#تبلیغات\n{getad.discription}");
+                                    await bot.SendTextMessageAsync(ForceJoinChannelID, $"#تبلیغات\n{getad.discription}");
                                 }
                                 else
                                 {
                                     var AdsImage = controller.GetImage(new Models.Model.Image()
                                     { uID = CallInfo[0], UniqueID = CallInfo[1] });
-                                    bot.SendPhotoAsync(ForceJoinChannelID, AdsImage.FileID,
+                                    await bot.SendPhotoAsync(ForceJoinChannelID, AdsImage.FileID,
                                         $"#تبلیغات\n{AdsImage.Discription}");
                                 }
                             }
                             else
                             {
-                                bot.SendTextMessageAsync(CallInfo[0], "یا امازاده درگاهه پرداخت",
-                                    replyMarkup: RegisteredUsersRKM);
+                                await bot.SendTextMessageAsync(CallInfo[0], "یا امازاده درگاهه پرداخت",
+                                      replyMarkup: RegisteredUsersRKM);
                             }
 
                         }
@@ -832,9 +834,9 @@ namespace NewBot
                                     ? ContentMessageType.Text
                                     : ContentMessageType.Caption);
                             controller.UpdateUser(new user() { uID = CallInfo[0], adsStep = 0 });
-                            bot.SendTextMessageAsync(CallInfo[0],
-                                "اگهی استخدامی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید",
-                                replyMarkup: RegisteredUsersRKM);
+                            await bot.SendTextMessageAsync(CallInfo[0],
+                                  "اگهی استخدامی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید",
+                                  replyMarkup: RegisteredUsersRKM);
                         }
 
                         #endregion
@@ -1326,8 +1328,6 @@ namespace NewBot
                     }
                 }
                 #endregion
-
-
             }
             catch (Exception)
             {
@@ -1394,14 +1394,44 @@ namespace NewBot
             {
                 switch (e.Message.Text)
                 {
-                    case "تبلیغ کانال و گروه":
+                    case "تبلیغ گروه":
+                    case "تبلیغ کانال":
                         if (user.adsStep == 0)
                         {
                             if (user.finishedregister == true)
                             {
+                                #region Shared
                                 await bot.SendTextMessageAsync(e.Message.From.Id, "لطفا متن اگهی تبلیغاتی خود را به صورت یک جمله ارسال کنید");
-                                controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 1 });
-                                controller.InsertNewAds(new ADSList() { uID = e.Message.From.Id.ToString(), OneLiner = true });
+                                var gid = Guid.NewGuid();
+                                Tagg = gid.ToString();
+                                #endregion
+                                //2,32,32,new Byte[]{2,2,3,5,7,8,4,4}
+                                #region Group
+                                if (e.Message.Text == "تبلیغ گروه")
+                                {
+                                    controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 10 });
+                                    await controller.AdsAsync(
+                                        new AdsModel()
+                                        {
+                                            AdsOperation = AdsOperation.Insert,
+                                            AdsType = AdsType.Group,
+                                            AdsGroup = new AdsGroup() { uID = e.Message.From.Id.ToString(), ProjectID = gid.ToString() }
+                                        });
+                                }
+                                #endregion
+
+                                #region Channel
+                                else
+                                {
+                                    controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 20 });
+                                    await controller.AdsAsync(new AdsModel()
+                                    {
+                                        AdsOperation = AdsOperation.Insert,
+                                        AdsType = AdsType.Channel,
+                                        AdsChannel = new AdsChannel() { uID = e.Message.From.Id.ToString(), ProjectID = gid.ToString() }
+                                    });
+                                }
+                                #endregion
                             }
                             else
                             {
@@ -1409,6 +1439,7 @@ namespace NewBot
                             }
                         }
                         break;
+
                     case "تبلیغ کسب و کار":
                         if (user.adsStep == 0)
                         {
@@ -1438,48 +1469,89 @@ namespace NewBot
                         switch (user.adsStep)
                         {
                             #region Get Discription
-                            case 1:
-                                try
+                            case 20:
+                            case 10:
+                                if (e.Message.Text.Length < 50)
                                 {
-                                    if (e.Message.Text.Length < 50)
+                                    #region Shared
+                                    await bot.SendTextMessageAsync(e.Message.From.Id,
+                                        "متن اگهی ذخیره شد\nلطفا لینک گروه یا کانال تلگرامی خود را ارسال کنید:",
+                                        replyMarkup: new ForceReplyMarkup() { Selective = true });
+                                    #endregion
+
+                                    #region Group
+                                    if (user.adsStep == 10)
                                     {
-                                        controller.UpdateAds(new ADSList() { uID = e.Message.From.Id.ToString(), discription = e.Message.Text });
-                                        controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 2 });
-                                        await bot.SendTextMessageAsync(e.Message.From.Id,
-                                            "متن اگهی ذخیره شد\nلطفا لینک گروه یا کانال تلگرامی خود را ارسال کنید:",
-                                            replyMarkup: new ForceReplyMarkup() { Selective = true });
+                                        await controller.AdsAsync(
+                                            new AdsModel()
+                                            {
+                                                AdsType = AdsType.Group,
+                                                AdsOperation = AdsOperation.Update,
+                                                AdsGroup = new AdsGroup() { uID = e.Message.From.Id.ToString(), ProjectID = Tagg, Disciption = e.Message.Text }
+                                            });
+                                        controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 11 });
                                     }
+                                    #endregion
+
+                                    #region Channel
                                     else
                                     {
-                                        await bot.SendTextMessageAsync(e.Message.From.Id, "متن اگهی خیلی طولانی است");
+                                        await controller.AdsAsync(new AdsModel()
+                                        {
+                                            AdsType = AdsType.Channel,
+                                            AdsOperation = AdsOperation.Update,
+                                            AdsChannel = new AdsChannel() { uID = e.Message.From.Id.ToString(), ProjectID = Tagg, Disciption = e.Message.Text }
+                                        });
+                                        controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 21 });
                                     }
+                                    #endregion
                                 }
-                                catch (Exception)
+                                else
                                 {
-
-                                    throw;
+                                    await bot.SendTextMessageAsync(e.Message.From.Id, "متن اگهی خیلی طولانی است");
                                 }
                                 break;
                             #endregion
 
                             #region Get Link
-                            case 2:
+                            case 21:
+                            case 11:
                                 try
                                 {
                                     if (e.Message.Text.Length < 440)
                                     {
-                                        bool IsMatch = CheckLink.IsMatch(e.Message.Text);
-                                        bool IsMatch2 = CheckLink2.IsMatch(e.Message.Text);
-                                        if (IsMatch || IsMatch2)
+                                        #region Shared
+                                        await bot.SendTextMessageAsync(e.Message.From.Id, "اگهی شما ثبت شد\nپس از برسی توسط ادمین در ساعت مشخص شده در کانال قرار داده خواهد شد", replyMarkup: RegisteredUsersRKM);
+                                        #endregion
+
+                                        #region Group
+                                        if (user.adsStep == 11)
                                         {
-                                            controller.UpdateAds(new ADSList() { uID = e.Message.From.Id.ToString(), link = e.Message.Text });
-                                            controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 4 });
-                                            await bot.SendTextMessageAsync(e.Message.From.Id, "اگهی شما ثبت شد\nپس از برسی توسط ادمین در ساعت مشخص شده در کانال قرار داده خواهد شد", replyMarkup: RegisteredUsersRKM);
+                                            await controller.AdsAsync(new AdsModel()
+                                            {
+                                                AdsType = AdsType.Group,
+                                                AdsOperation = AdsOperation.Update,
+                                                AdsGroup = new AdsGroup()
+                                                {
+                                                    uID = e.Message.From.Id.ToString(), ProjectID = Tagg,
+                                                    Link = e.Message.Text
+                                                }
+                                            });
+                                            controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 0 });
                                         }
+                                        #endregion
+
+                                        #region Channel
                                         else
                                         {
-                                            await bot.SendTextMessageAsync(e.Message.From.Id, "لینک اگهی شما حتما باید با \n  https://t.me \n یا\n t.me/ اغاز شود");
+                                            controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 22 });
                                         }
+                                        #endregion
+
+                                    }
+                                    else
+                                    {
+                                        await bot.SendTextMessageAsync(e.Message.From.Id, "لینک اگهی خیلی طولانی است");
                                     }
                                 }
                                 catch (Exception)
@@ -1600,6 +1672,41 @@ namespace NewBot
 
                 throw;
             }
+        }
+
+        public async Task<string> LinkProccessAsync(string link)
+        {
+            if (link.StartsWith("@"))
+            {
+                var FindChat = await bot.GetChatAsync(link);
+                string status = "";
+                switch (FindChat.Type)
+                {
+                    case ChatType.Private:
+                        status = "404";
+                        break;
+                    case ChatType.Channel:
+                        status = "Channel";
+                        break;
+                    case ChatType.Group:
+                        status = "Group";
+                        break;
+                    case ChatType.Supergroup:
+                        status = "Super Group";
+                        break;
+                    case ChatType.Sender:
+                        status = "404";
+                        break;
+                    default:
+                        status = "404";
+                        break;
+                }
+
+                return status;
+            }
+            return "404";
+
+
         }
         [Obsolete]
         public async void CheckForSubMember(string Text, string id)
@@ -1906,28 +2013,7 @@ namespace NewBot
                     {
                         if (user.projectstep == 0 && user.adsStep == 0)
                         {
-                            var agnt = controller.GetAgent(new agent() { agentuid = s.Message.From.Id.ToString() });
-                            if (user.AdsChance > 0)
-                            {
-                                await bot.SendTextMessageAsync(s.Message.From.Id, "لطفا نوع اگهی خود را انتخاب کنید:", replyMarkup: ADSRKM);
-                                break;
-                            }
-                            if (agnt != null)
-                            {
-                                if (agnt.FreeBalance > 0)
-                                {
-                                    await bot.SendTextMessageAsync(s.Message.From.Id, "شما درحال استفاده از تبلیغ رایگان خود هستید\nلطفا نوع اگهی خود را انتخاب کنید:", replyMarkup: ADSRKM);
-                                    break;
-                                }
-                                else
-                                {
-                                    await bot.SendTextMessageAsync(s.Message.From.Id, "موجودی حساب شما کافی نمیباشد");
-                                }
-                            }
-                            else
-                            {
-                                await bot.SendTextMessageAsync(s.Message.From.Id, "موجودی حساب شما کافی نمیباشد");
-                            }
+                            await bot.SendTextMessageAsync(s.Message.From.Id, "لطفا نوع اگهی خود را انتخاب کنید:", replyMarkup: ADSRKM);
                         }
                         else
                         {

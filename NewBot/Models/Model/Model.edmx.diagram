@@ -5,13 +5,15 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="beccf5a4bf344f19acaf6b5e31a492a9" Name="Diagram1">
-        <EntityTypeShape EntityType="telbotZB_dbModel.agent" Width="1.5" PointX="4.875" PointY="3.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="telbotZB_dbModel.admin" Width="1.5" PointX="4.75" PointY="0.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="telbotZB_dbModel.Project" Width="1.5" PointX="8.25" PointY="3.25" />
-        <EntityTypeShape EntityType="telbotZB_dbModel.HireList" Width="1.5" PointX="10" PointY="3.25" />
-        <EntityTypeShape EntityType="telbotZB_dbModel.ADSList" Width="1.5" PointX="3.125" PointY="3.5" />
-        <EntityTypeShape EntityType="telbotZB_dbModel.Image" Width="1.5" PointX="2.25" PointY="6.25" />
-        <EntityTypeShape EntityType="telbotZB_dbModel.user" Width="1.5" PointX="6.625" PointY="1.5" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.agent" Width="1.5" PointX="5" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.admin" Width="1.5" PointX="5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.Project" Width="1.5" PointX="8.25" PointY="2.875" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.HireList" Width="1.5" PointX="9.875" PointY="2.875" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.ADSList" Width="1.5" PointX="2.375" PointY="3" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.Image" Width="1.5" PointX="0.75" PointY="3.25" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.user" Width="1.5" PointX="6.625" PointY="1.125" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.AdsChannel" Width="1.5" PointX="1.5" PointY="5.625" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.AdsGroup" Width="1.5" PointX="3.25" PointY="5.625" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
