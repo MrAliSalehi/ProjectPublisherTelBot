@@ -6,7 +6,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.Entity.Infrastructure;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Validation;
+using System.Threading.Tasks;
 using NewBot.Models.CustomModel;
 
 namespace NewBot.Models.Controller
@@ -491,6 +493,28 @@ namespace NewBot.Models.Controller
         #endregion
 
         #region Remove
+
+        public async Task<bool> CancelUserProjectAsync(Project proj)
+        {
+            try
+            {
+                using (var db = new telbotZB_dbEntities())
+                {
+                    var find = await db.Projects.FirstOrDefaultAsync(p => p.uid == proj.uid && p.ProjectId == proj.ProjectId);
+                    if (find != null)
+                    {
+                        db.Projects.Remove(find);
+                        await db.SaveChangesAsync();
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public bool RemoveUserProject(Project proj)
         {
             try
@@ -709,6 +733,28 @@ namespace NewBot.Models.Controller
         #endregion
 
         #region Remove
+
+        public async Task<bool> CancelUserHireProjectAsync(HireList hire)
+        {
+            try
+            {
+                using (var db = new telbotZB_dbEntities())
+                {
+                    var find = await db.HireLists.FirstOrDefaultAsync(p => p.employeeID == hire.employeeID && p.ProjectID == hire.ProjectID);
+                    if (find != null)
+                    {
+                        db.HireLists.Remove(find);
+                        await db.SaveChangesAsync();
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public bool RemoveHireProject(HireList hire)
         {
             try

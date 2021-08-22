@@ -261,7 +261,7 @@ namespace NewBot
 
         #region Event Handler
         [Obsolete]
-        private void Bot_OnCallbackQuery(object sender, CallbackQueryEventArgs e)
+        private async void Bot_OnCallbackQuery(object sender, CallbackQueryEventArgs e)
         {
             #region AcceptPolicy
             //string[] PolicyStatus = e.CallbackQuery.Data.Split(':');
@@ -346,6 +346,78 @@ namespace NewBot
             }
             #endregion
 
+            #region Remove Projects ByUser
+            //remove*project*{sendToUser.MessageId}*{Tagg}*{msg.Chat.Id}*{msg.MessageId}
+            if (e.CallbackQuery.Data.StartsWith("remove"))
+            {
+                string[] procData = e.CallbackQuery.Data.Split('*');
+                string type = procData[1];
+                string messageID = procData[2];
+                string projectTag = procData[3];
+                string chatID = procData[4];
+                string adminMessageId = procData[5];
+                switch (type)
+                {
+                    #region Project
+                    case "project":
+                        var delProject = await controller.CancelUserProjectAsync(new Project() { uid = e.CallbackQuery.From.Id.ToString(), ProjectId = projectTag });
+                        if (delProject)
+                        {
+                            controller.UpdateUser(new user() { uID = e.CallbackQuery.From.Id.ToString(), projectstep = 0 });
+                            await bot.EditMessageReplyMarkupAsync(e.CallbackQuery.Message.Chat.Id,
+                                Convert.ToInt32(messageID));
+                            await bot.DeleteMessageAsync(e.CallbackQuery.Message.Chat.Id, Convert.ToInt32(messageID));
+                            await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "کاربر گرامی \nاگهی شما پاک شد\nاگر از ثبت اگهیه پاک شده بیش از 48 ساعت میگذرد پیام ان در ربات پاک نمیشود\nولی دکمه ان پاک میشود");
+                            EditAdminMessage(new MessageDataViewModel()
+                            {
+                                customStautsText = "Project Canceled By User",
+                                ChatID = chatID,
+                                MessageID = Convert.ToInt32(adminMessageId),
+                                MessageText = e.CallbackQuery.Message.Text
+                            }, ContentType.Project, ContentStatus.none, ContentMessageType.Text);
+                        }
+                        else
+                        {
+                            await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "این اگهی قبلا پاک شده است ", replyMarkup: supportIKM);
+                        }
+                        break;
+                    #endregion
+
+                    #region Hire
+                    case "hire":
+                        var delHire = await controller.CancelUserHireProjectAsync(new HireList() { employeeID = e.CallbackQuery.From.Id.ToString(), ProjectID = projectTag });
+                        if (delHire)
+                        {
+                            controller.UpdateUser(new user() { uID = e.CallbackQuery.From.Id.ToString(), projectstep = 0, ishireing = false });
+                            await bot.EditMessageReplyMarkupAsync(e.CallbackQuery.Message.Chat.Id, Convert.ToInt32(messageID));
+                            await bot.DeleteMessageAsync(e.CallbackQuery.Message.Chat.Id, Convert.ToInt32(messageID));
+                            await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "کاربر گرامی \nاگهی شما پاک شد\nاگر از ثبت اگهیه پاک شده بیش از 48 ساعت میگذرد پیام ان در ربات پاک نمیشود\nولی دکمه ان پاک میشود");
+                            EditAdminMessage(new MessageDataViewModel()
+                            {
+                                customStautsText = "Project Canceled By User",
+                                ChatID = chatID,
+                                MessageID = Convert.ToInt32(adminMessageId),
+                                MessageText = e.CallbackQuery.Message.Text
+                            }, ContentType.Project, ContentStatus.none, ContentMessageType.Text);
+                        }
+                        else
+                        {
+                            await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "این اگهی قبلا پاک شده است ", replyMarkup: supportIKM);
+                        }
+                        break;
+                    #endregion
+
+                    #region Ads
+                    case "ads":
+                        break;
+                    #endregion
+
+                    default:
+                        break;
+                }
+            }
+
+            #endregion
             #endregion
 
             #region Category Handler
@@ -365,12 +437,12 @@ namespace NewBot
                         var t = controller.UpdateUser(new user { uID = e.CallbackQuery.From.Id.ToString(), projectstep = 2 });
                         if (h && t)
                         {
-                            bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "دسته بندی تایید شد\nلطفا متن اگهی خود را ارسال کنید");
+                            await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "دسته بندی تایید شد\nلطفا متن اگهی خود را ارسال کنید");
                         }
                     }
                     else
                     {
-                        bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "دسته بندی شما از قبل انتخاب شده است،میتوانید بعدا انرا تعقیر دهید");
+                        await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "دسته بندی شما از قبل انتخاب شده است،میتوانید بعدا انرا تعقیر دهید");
                     }
                 }
             }
@@ -380,11 +452,12 @@ namespace NewBot
             //UserID:ProjectID;Status
 
             var AdminList = controller.GetAllAdmins();
-            if (AdminList.Any(p => p.uID == e.CallbackQuery.From.Id) && !e.CallbackQuery.Data.StartsWith("deactive"))
+            if (AdminList.Any(p => p.uID == e.CallbackQuery.From.Id) && !e.CallbackQuery.Data.StartsWith("deactive") && !e.CallbackQuery.Data.StartsWith("remove"))
             {
                 try
                 {
                     #region Push Ads List
+
                     if (e.CallbackQuery.Data.StartsWith("ADL:"))
                     {
                         string[] splitid = e.CallbackQuery.Data.Remove(0, 4).Split(';');
@@ -397,6 +470,7 @@ namespace NewBot
                                 idlist.Add(Convert.ToInt32(splitid[i]));
                             }
                         }
+
                         controller.UpdateAdsByIDList(idlist);
                         var adses = controller.GetAdsByIDList(idlist);
                         foreach (var ads in adses)
@@ -404,6 +478,7 @@ namespace NewBot
                             controller.UpdateUser(new user() { uID = ads.uID, adsStep = 0 });
                             txtToSend += $"\n{ads.discription}\n{ads.link}";
                         }
+
                         EditAdminMessage(new MessageDataViewModel()
                         {
                             ChatID = e.CallbackQuery.Message.Chat.Id.ToString(),
@@ -413,27 +488,40 @@ namespace NewBot
                             ContentType.none, ContentStatus.none, ContentMessageType.custom);
                         bot.SendTextMessageAsync(ForceJoinChannelID, txtToSend);
                     }
+
                     #endregion
 
                     #region Variables For Data Proccess
+
                     string[] AdminCall = e.CallbackQuery.Data.Split(';');
                     string[] CallInfo = AdminCall[0].Split(':');
                     bool isAds = AdminCall[1].StartsWith("Ad") ? true : false;
-                    InlineKeyboardMarkup Accept = new InlineKeyboardMarkup(new[] { new[] { InlineKeyboardButton.WithUrl("درخواست همکاری", $"t.me/ratheropanelbot?start=chat_{CallInfo[0]}"), } });
+                    InlineKeyboardMarkup Accept = new InlineKeyboardMarkup(new[]
+                    {
+                        new[]
+                        {
+                            InlineKeyboardButton.WithUrl("درخواست همکاری",
+                                $"t.me/ratheropanelbot?start=chat_{CallInfo[0]}"),
+                        }
+                    });
                     var GetUser = controller.GetUser(new user() { uID = CallInfo[0] });
                     var checkforfree = controller.GetAgent(new agent() { agentuid = CallInfo[0] });
                     bool CanPublish = false;
+
                     #endregion
 
                     #region Project
+
                     if (!AdminCall[1].StartsWith("H") && isAds != true)
                     {
                         #region Accept
+
                         if (AdminCall[1] == "Accept")
                         {
                             if (GetUser.ProjectChance > 0)
                             {
-                                controller.UpdateUser(new user() { uID = CallInfo[0], ProjectChance = GetUser.ProjectChance - 1 });
+                                controller.UpdateUser(new user()
+                                { uID = CallInfo[0], ProjectChance = GetUser.ProjectChance - 1 });
                                 CanPublish = true;
                             }
                             else
@@ -442,7 +530,8 @@ namespace NewBot
                                 {
                                     if (checkforfree.FreeBalance > 0)
                                     {
-                                        controller.UpdateAgent(new agent() { agentuid = CallInfo[0], FreeBalance = checkforfree.FreeBalance - 1 });
+                                        controller.UpdateAgent(new agent()
+                                        { agentuid = CallInfo[0], FreeBalance = checkforfree.FreeBalance - 1 });
                                         CanPublish = true;
                                     }
 
@@ -451,7 +540,8 @@ namespace NewBot
 
                             if (CanPublish)
                             {
-                                bot.SendTextMessageAsync(CallInfo[0], "اگهی شما توسط ادمین تایید شد", replyMarkup: RegisteredUsersRKM);
+                                await bot.SendTextMessageAsync(CallInfo[0], "اگهی شما توسط ادمین تایید شد",
+                                    replyMarkup: RegisteredUsersRKM);
                                 EditAdminMessage(new MessageDataViewModel()
                                 {
                                     ChatID = e.CallbackQuery.Message.Chat.Id.ToString(),
@@ -459,9 +549,11 @@ namespace NewBot
                                     MessageText = e.CallbackQuery.Message.Text,
                                 },
                                     ContentType.Project, ContentStatus.Accepted, ContentMessageType.Text);
-                                var getproj = controller.GetUserProject(new Project() { ProjectId = CallInfo[1], uid = CallInfo[0] });
+                                var getproj = controller.GetUserProject(new Project()
+                                { ProjectId = CallInfo[1], uid = CallInfo[0] });
 
                                 #region ProjectText
+
                                 string tx = $@"#پروژه
 
 کد اگهی:{getproj.ProjectId}
@@ -469,39 +561,56 @@ namespace NewBot
 دسته بندی:\#{getproj.category}
 
 توضیحات:{getproj.dicription}";
-                                string FinalProject = $"#پروژه \nکد اگهی: #{getproj.ProjectId} \n دسته بندی: #{getproj.category} \nتوضیحات:\n {getproj.dicription}";
+                                string FinalProject =
+                                    $"#پروژه \nکد اگهی: #{getproj.ProjectId} \n دسته بندی: #{getproj.category} \nتوضیحات:\n {getproj.dicription}";
+
                                 #endregion
 
-                                var sendtochannel = bot.SendTextMessageAsync(ForceJoinChannelID, FinalProject, replyMarkup: Accept);
+                                var sendtochannel = await bot.SendTextMessageAsync(ForceJoinChannelID, FinalProject,
+                                    replyMarkup: Accept);
                                 controller.UpdateUser(new user() { uID = CallInfo[0], projectstep = 0 });
-                                controller.UpdateUserProjectByTag(new Project() { uid = CallInfo[0], ProjectId = CallInfo[1], ChnnlMssgID = sendtochannel.Result.MessageId.ToString() });
-                                controller.ConfirmUserProject(new Project() { Checked = true, ProjectId = CallInfo[1], uid = CallInfo[0] });
+                                controller.UpdateUserProjectByTag(new Project()
+                                {
+                                    uid = CallInfo[0],
+                                    ProjectId = CallInfo[1],
+                                    ChnnlMssgID = sendtochannel.MessageId.ToString()
+                                });
+                                controller.ConfirmUserProject(new Project()
+                                { Checked = true, ProjectId = CallInfo[1], uid = CallInfo[0] });
                             }
                             else
                             {
-                                bot.SendTextMessageAsync(CallInfo[0], "بازم مثلا درگاهه پرداخته", replyMarkup: RegisteredUsersRKM);
+                                await bot.SendTextMessageAsync(CallInfo[0], "بازم مثلا درگاهه پرداخته",
+                                    replyMarkup: RegisteredUsersRKM);
                             }
 
                         }
+
                         #endregion
 
                         #region Reject
+
                         if (AdminCall[1] == "Reject")
                         {
-                            bot.SendTextMessageAsync(CallInfo[0], "اگهی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید", replyMarkup: RegisteredUsersRKM);
+                            bot.SendTextMessageAsync(CallInfo[0],
+                                "اگهی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید",
+                                replyMarkup: RegisteredUsersRKM);
                             EditAdminMessage(new MessageDataViewModel()
                             {
                                 ChatID = e.CallbackQuery.Message.Chat.Id.ToString(),
                                 MessageID = e.CallbackQuery.Message.MessageId,
                                 MessageText = e.CallbackQuery.Message.Text,
                             },
-                             ContentType.Project, ContentStatus.Rejected, ContentMessageType.Text);
-                            controller.ConfirmUserProject(new Project() { Checked = false, ProjectId = CallInfo[1], uid = CallInfo[0] });
+                                ContentType.Project, ContentStatus.Rejected, ContentMessageType.Text);
+                            controller.ConfirmUserProject(new Project()
+                            { Checked = false, ProjectId = CallInfo[1], uid = CallInfo[0] });
                             controller.UpdateUser(new user() { uID = CallInfo[0], projectstep = 0 });
                         }
+
                         #endregion
 
                         #region Block
+
                         if (AdminCall[1] == "Block")
                         {
                             EditAdminMessage(new MessageDataViewModel()
@@ -510,26 +619,29 @@ namespace NewBot
                                 MessageID = e.CallbackQuery.Message.MessageId,
                                 MessageText = e.CallbackQuery.Message.Text,
                             },
-                             ContentType.Project, ContentStatus.Blocked, ContentMessageType.Text);
+                                ContentType.Project, ContentStatus.Blocked, ContentMessageType.Text);
                             controller.UpdateUser(new user() { uID = CallInfo[0], IsBanned = true });
                             bot.SendTextMessageAsync(CallInfo[0], "شما توسط ادمین بن شدید");
                         }
+
                         #endregion
 
                     }
+
                     #endregion
 
                     #region Hire
+
                     if (AdminCall[1].StartsWith("H") && isAds != true)
                     {
                         #region Accept
 
                         if (AdminCall[1] == "HAccept")
                         {
-
                             if (GetUser.HireChance > 0)
                             {
-                                controller.UpdateUser(new user() { uID = CallInfo[0], HireChance = GetUser.HireChance - 1 });
+                                controller.UpdateUser(new user()
+                                { uID = CallInfo[0], HireChance = GetUser.HireChance - 1 });
                                 CanPublish = true;
                             }
                             else
@@ -538,7 +650,8 @@ namespace NewBot
                                 {
                                     if (checkforfree.FreeBalance > 0)
                                     {
-                                        controller.UpdateAgent(new agent() { agentuid = CallInfo[0], FreeBalance = checkforfree.FreeBalance - 1 });
+                                        controller.UpdateAgent(new agent()
+                                        { agentuid = CallInfo[0], FreeBalance = checkforfree.FreeBalance - 1 });
                                         CanPublish = true;
                                     }
                                 }
@@ -552,30 +665,48 @@ namespace NewBot
                                     MessageID = e.CallbackQuery.Message.MessageId,
                                     MessageText = e.CallbackQuery.Message.Text,
                                 },
-                                 ContentType.Hire, ContentStatus.Accepted, ContentMessageType.Text);
-                                bot.SendTextMessageAsync(CallInfo[0], "درخواست استخدام شما توسط ادمین تایید و در کانال قرار داده شد", replyMarkup: RegisteredUsersRKM);
+                                    ContentType.Hire, ContentStatus.Accepted, ContentMessageType.Text);
+                                await bot.SendTextMessageAsync(CallInfo[0],
+                                     "درخواست استخدام شما توسط ادمین تایید و در کانال قرار داده شد",
+                                     replyMarkup: RegisteredUsersRKM);
 
-                                var gethire = controller.GetHireProject(new HireList() { ProjectID = CallInfo[1], employeeID = CallInfo[0] });
-                                controller.UpdateUser(new user() { uID = CallInfo[0], projectstep = 0, ishireing = false });
+                                var gethire = controller.GetHireProject(new HireList()
+                                { ProjectID = CallInfo[1], employeeID = CallInfo[0] });
+                                controller.UpdateUser(new user()
+                                { uID = CallInfo[0], projectstep = 0, ishireing = false });
+
                                 #region FinalText
+
                                 string FinalText = $@"#استخدام
 کد اگهی:{gethire.ProjectID}
 
 توضیحات:
 {gethire.discription}";
+
                                 #endregion
-                                var SNDToCHannel = bot.SendTextMessageAsync(ForceJoinChannelID, FinalText, replyMarkup: Accept);
-                                controller.UpdateHireByTag(new HireList() { employeeID = e.CallbackQuery.From.Id.ToString(), ProjectID = CallInfo[1], ChnnlMssgID = SNDToCHannel.Result.MessageId.ToString() });
-                                controller.ConfirmHireProject(new HireList() { @checked = true, ProjectID = CallInfo[1], employeeID = CallInfo[0] });
+
+                                var SNDToCHannel = await bot.SendTextMessageAsync(ForceJoinChannelID, FinalText,
+                                    replyMarkup: Accept);
+                                controller.UpdateHireByTag(new HireList()
+                                {
+                                    employeeID = e.CallbackQuery.From.Id.ToString(),
+                                    ProjectID = CallInfo[1],
+                                    ChnnlMssgID = SNDToCHannel.MessageId.ToString()
+                                });
+                                controller.ConfirmHireProject(new HireList()
+                                { @checked = true, ProjectID = CallInfo[1], employeeID = CallInfo[0] });
                             }
                             else
                             {
-                                bot.SendTextMessageAsync(CallInfo[0], "الان مثلا این درگاهه پرداخته", replyMarkup: RegisteredUsersRKM);
+                                await bot.SendTextMessageAsync(CallInfo[0], "الان مثلا این درگاهه پرداخته",
+                                     replyMarkup: RegisteredUsersRKM);
                             }
                         }
+
                         #endregion
 
                         #region Reject
+
                         if (AdminCall[1] == "HReject")
                         {
                             EditAdminMessage(new MessageDataViewModel()
@@ -584,15 +715,19 @@ namespace NewBot
                                 MessageID = e.CallbackQuery.Message.MessageId,
                                 MessageText = e.CallbackQuery.Message.Text,
                             },
-                             ContentType.Hire, ContentStatus.Rejected, ContentMessageType.Text);
-                            controller.ConfirmHireProject(new HireList() { @checked = false, ProjectID = CallInfo[1], employeeID = CallInfo[0] });
+                                ContentType.Hire, ContentStatus.Rejected, ContentMessageType.Text);
+                            controller.ConfirmHireProject(new HireList()
+                            { @checked = false, ProjectID = CallInfo[1], employeeID = CallInfo[0] });
                             controller.UpdateUser(new user() { uID = CallInfo[0], projectstep = 0, ishireing = false });
-                            bot.SendTextMessageAsync(CallInfo[0], "اگهی استخدامی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید", replyMarkup: RegisteredUsersRKM);
+                            bot.SendTextMessageAsync(CallInfo[0],
+                                "اگهی استخدامی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید",
+                                replyMarkup: RegisteredUsersRKM);
                         }
 
                         #endregion
 
                         #region Block
+
                         if (AdminCall[1] == "HBlock")
                         {
                             EditAdminMessage(new MessageDataViewModel()
@@ -601,23 +736,28 @@ namespace NewBot
                                 MessageID = e.CallbackQuery.Message.MessageId,
                                 MessageText = e.CallbackQuery.Message.Text,
                             },
-                             ContentType.Hire, ContentStatus.Blocked, ContentMessageType.Text);
+                                ContentType.Hire, ContentStatus.Blocked, ContentMessageType.Text);
                             bot.SendTextMessageAsync(CallInfo[0], "شما توسط ادمین بن شدید");
                             controller.UpdateUser(new user() { uID = CallInfo[0], IsBanned = true });
                         }
+
                         #endregion
                     }
+
                     #endregion
 
                     #region Ads
+
                     if (isAds)
                     {
                         #region Accept
+
                         if (AdminCall[1] == "AdAccept")
                         {
                             if (GetUser.AdsChance > 0)
                             {
-                                controller.UpdateUser(new user() { uID = CallInfo[0], AdsChance = GetUser.AdsChance - 1 });
+                                controller.UpdateUser(new user()
+                                { uID = CallInfo[0], AdsChance = GetUser.AdsChance - 1 });
                                 CanPublish = true;
                             }
                             else
@@ -626,7 +766,8 @@ namespace NewBot
                                 {
                                     if (checkforfree.FreeBalance > 0)
                                     {
-                                        controller.UpdateAgent(new agent() { agentuid = CallInfo[0], FreeBalance = checkforfree.FreeBalance - 2 });
+                                        controller.UpdateAgent(new agent()
+                                        { agentuid = CallInfo[0], FreeBalance = checkforfree.FreeBalance - 2 });
                                         CanPublish = true;
                                     }
                                 }
@@ -638,77 +779,114 @@ namespace NewBot
                                 {
                                     ChatID = e.CallbackQuery.Message.Chat.Id.ToString(),
                                     MessageID = e.CallbackQuery.Message.MessageId,
-                                    MessageText = e.CallbackQuery.Message.Text == null ? e.CallbackQuery.Message.Caption : e.CallbackQuery.Message.Text,
+                                    MessageText = e.CallbackQuery.Message.Text == null
+                                            ? e.CallbackQuery.Message.Caption
+                                            : e.CallbackQuery.Message.Text,
                                 },
-                                    ContentType.Ads, ContentStatus.Accepted, msgType: CallInfo[1].StartsWith("none>") ? ContentMessageType.Text : ContentMessageType.Caption);
-                                bot.SendTextMessageAsync(CallInfo[0], "اگهی تبلیغاتی شما توسط ادمین تایید شد", replyMarkup: RegisteredUsersRKM);
+                                    ContentType.Ads, ContentStatus.Accepted,
+                                    msgType: CallInfo[1].StartsWith("none>")
+                                        ? ContentMessageType.Text
+                                        : ContentMessageType.Caption);
+                                bot.SendTextMessageAsync(CallInfo[0], "اگهی تبلیغاتی شما توسط ادمین تایید شد",
+                                    replyMarkup: RegisteredUsersRKM);
                                 controller.UpdateUser(new user() { uID = CallInfo[0], adsStep = 0 });
                                 if (CallInfo[1].StartsWith("none>"))
                                 {
                                     string[] adsplit = CallInfo[1].Split('>');
-                                    var getad = controller.GetAds(new ADSList() { uID = CallInfo[0], GUID = adsplit[1] });
+                                    var getad = controller.GetAds(
+                                        new ADSList() { uID = CallInfo[0], GUID = adsplit[1] });
                                     bot.SendTextMessageAsync(ForceJoinChannelID, $"#تبلیغات\n{getad.discription}");
                                 }
                                 else
                                 {
-                                    var AdsImage = controller.GetImage(new Models.Model.Image() { uID = CallInfo[0], UniqueID = CallInfo[1] });
-                                    bot.SendPhotoAsync(ForceJoinChannelID, AdsImage.FileID, $"#تبلیغات\n{AdsImage.Discription}");
+                                    var AdsImage = controller.GetImage(new Models.Model.Image()
+                                    { uID = CallInfo[0], UniqueID = CallInfo[1] });
+                                    bot.SendPhotoAsync(ForceJoinChannelID, AdsImage.FileID,
+                                        $"#تبلیغات\n{AdsImage.Discription}");
                                 }
                             }
                             else
                             {
-                                bot.SendTextMessageAsync(CallInfo[0], "یا امازاده درگاهه پرداخت", replyMarkup: RegisteredUsersRKM);
+                                bot.SendTextMessageAsync(CallInfo[0], "یا امازاده درگاهه پرداخت",
+                                    replyMarkup: RegisteredUsersRKM);
                             }
 
                         }
+
                         #endregion
 
                         #region Reject
+
                         if (AdminCall[1] == "AdReject")
                         {
                             EditAdminMessage(new MessageDataViewModel()
                             {
                                 ChatID = e.CallbackQuery.Message.Chat.Id.ToString(),
                                 MessageID = e.CallbackQuery.Message.MessageId,
-                                MessageText = e.CallbackQuery.Message.Text == null ? e.CallbackQuery.Message.Caption : e.CallbackQuery.Message.Text,
+                                MessageText = e.CallbackQuery.Message.Text == null
+                                        ? e.CallbackQuery.Message.Caption
+                                        : e.CallbackQuery.Message.Text,
                             },
-                             ContentType.Ads, ContentStatus.Rejected, msgType: CallInfo[1].StartsWith("none>") ? ContentMessageType.Text : ContentMessageType.Caption);
+                                ContentType.Ads, ContentStatus.Rejected,
+                                msgType: CallInfo[1].StartsWith("none>")
+                                    ? ContentMessageType.Text
+                                    : ContentMessageType.Caption);
                             controller.UpdateUser(new user() { uID = CallInfo[0], adsStep = 0 });
-                            bot.SendTextMessageAsync(CallInfo[0], "اگهی استخدامی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید", replyMarkup: RegisteredUsersRKM);
+                            bot.SendTextMessageAsync(CallInfo[0],
+                                "اگهی استخدامی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید",
+                                replyMarkup: RegisteredUsersRKM);
                         }
+
                         #endregion
 
                         #region Block
+
                         if (AdminCall[1] == "AdBlock")
                         {
                             EditAdminMessage(new MessageDataViewModel()
                             {
                                 ChatID = e.CallbackQuery.Message.Chat.Id.ToString(),
                                 MessageID = e.CallbackQuery.Message.MessageId,
-                                MessageText = e.CallbackQuery.Message.Text == null ? e.CallbackQuery.Message.Caption : e.CallbackQuery.Message.Text,
+                                MessageText = e.CallbackQuery.Message.Text == null
+                                        ? e.CallbackQuery.Message.Caption
+                                        : e.CallbackQuery.Message.Text,
                             },
-                             ContentType.Ads, ContentStatus.Blocked, msgType: CallInfo[1].StartsWith("none>") ? ContentMessageType.Text : ContentMessageType.Caption);
+                                ContentType.Ads, ContentStatus.Blocked,
+                                msgType: CallInfo[1].StartsWith("none>")
+                                    ? ContentMessageType.Text
+                                    : ContentMessageType.Caption);
                             bot.SendTextMessageAsync(CallInfo[0], "شما توسط ادمین بن شدید");
                             controller.UpdateUser(new user() { uID = CallInfo[0], IsBanned = true });
                         }
+
                         #endregion
                     }
+
                     #endregion
                 }
                 catch (Exception x) when (x.Message.ToLower().Contains("null"))
                 {
                     foreach (var admin in AdminList)
                     {
-                        bot.SendTextMessageAsync(admin.uID, $"مشگلی در اگهیه ارسال شده وجود دارد :\n {x.Message}");
+                        await bot.SendTextMessageAsync(admin.uID,
+                            $"مشگلی در اگهیه ارسال شده وجود دارد :\n {x.Message}");
                     }
                 }
-                catch (NullReferenceException nullex) when (nullex.Message.ToLower().Contains("null") || (nullex.Data.ToString().ToLower().Contains("null")))
+                catch (NullReferenceException nullex) when (nullex.Message.ToLower().Contains("null") ||
+                                                            (nullex.Data.ToString().ToLower().Contains("null")))
                 {
                     foreach (var admin in AdminList)
                     {
-                        bot.SendTextMessageAsync(admin.uID, $"Null Refrence On CallBack Catched :\n {nullex.Message}");
+                        await bot.SendTextMessageAsync(admin.uID,
+                            $"Null Refrence On CallBack Catched :\n {nullex.Message}");
                     }
-
+                }
+                catch
+                {
+                    foreach (var admin in AdminList)
+                    {
+                        await bot.SendTextMessageAsync(admin.uID, $"Something Catched On CallBack,ReCheckSource:OCBQ-1TC--Last[C]");
+                    }
                 }
             }
             #endregion
@@ -918,7 +1096,7 @@ namespace NewBot
                                         await bot.SendTextMessageAsync(userinfo.EmployeeID,
                                             $"شما درخواست جدیدی برای همکاری دارید:\n\n{e.Message.Text}",
                                             replyMarkup: connect);
-                                        await bot.SendTextMessageAsync(e.Message.From.Id, "پیام شما برای کارفرما ارسال شد",replyMarkup:ProfileMenuRKM);
+                                        await bot.SendTextMessageAsync(e.Message.From.Id, "پیام شما برای کارفرما ارسال شد", replyMarkup: ProfileMenuRKM);
                                         controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), sendtoEMPmessageID = "" });
                                     }
                                 }
@@ -955,7 +1133,15 @@ namespace NewBot
                         await bot.EditMessageCaptionAsync(chatId: m.ChatID, messageId: m.MessageID, $"{type} {stat}\n{m.MessageText}");
                         break;
                     case ContentMessageType.Text:
-                        await bot.EditMessageTextAsync(chatId: m.ChatID, messageId: m.MessageID, $"{type} {stat}\n{m.MessageText}");
+                        if (stat == ContentStatus.none)
+                        {
+                            await bot.EditMessageTextAsync(chatId: m.ChatID, messageId: m.MessageID, $"{m.customStautsText}\n{m.MessageText}");
+                        }
+                        else
+                        {
+                            await bot.EditMessageTextAsync(chatId: m.ChatID, messageId: m.MessageID, $"{type} {stat}\n{m.MessageText}");
+
+                        }
                         break;
                     case ContentMessageType.custom:
                         await bot.EditMessageTextAsync(chatId: m.ChatID, messageId: m.MessageID, $"-----Pushed To Channel-----{m.MessageText}-----Pushed To Channel-----");
@@ -1187,6 +1373,11 @@ namespace NewBot
                             {
                                 await bot.SendTextMessageAsync(a.Message.From.Id, "Bad Command Syntax:\n x: [/addlist 5]");
                             }
+
+                        }
+
+                        if (a.Message.Text is "$key")
+                        {
 
                         }
                     }
@@ -2188,23 +2379,30 @@ namespace NewBot
 توضیحات:{project.dicription}";
                                         #endregion
 
-                                        await bot.SendTextMessageAsync(f.Message.From.Id, FinalProject);
 
 
                                         #region Send Project To Admin
                                         //UserID:ProjectID;Status
-                                        InlineKeyboardMarkup AdminController = new InlineKeyboardMarkup(new[] {
-                                    new[] {
+                                        InlineKeyboardMarkup AdminController = new InlineKeyboardMarkup(new[]{new[]{
                                         InlineKeyboardButton.WithCallbackData("Accept",$"{f.Message.From.Id}:{Tagg};Accept"),
                                         InlineKeyboardButton.WithCallbackData("Reject",$"{f.Message.From.Id}:{Tagg};Reject"),
-                                        InlineKeyboardButton.WithCallbackData("Block", $"{f.Message.From.Id}:{Tagg};Block"),
-                                    }
-                                });
+                                        InlineKeyboardButton.WithCallbackData("Block", $"{f.Message.From.Id}:{Tagg};Block"),}});
+
+                                        Telegram.Bot.Types.Message msg = null;
                                         foreach (var admin in SendToAdmins)
                                         {
                                             await bot.SendTextMessageAsync(admin.uID, $"Dear {admin.name}\n New Project Request:");
-                                            await bot.SendTextMessageAsync(admin.uID, FinalProject, replyMarkup: AdminController);
+                                            msg = await bot.SendTextMessageAsync(admin.uID, FinalProject, replyMarkup: AdminController);
                                         }
+
+                                        #region ProccessUserMessage
+
+                                        var sendToUser = await bot.SendTextMessageAsync(f.Message.From.Id, FinalProject);
+                                        var UserCancelation = new InlineKeyboardMarkup(new[] { new[] { InlineKeyboardButton.WithCallbackData("انصراف", $"remove*project*{sendToUser.MessageId}*{Tagg}*{msg.Chat.Id}*{msg.MessageId}"), } });
+                                        await bot.EditMessageReplyMarkupAsync(chatId: f.Message.Chat.Id,
+                                            sendToUser.MessageId, replyMarkup: UserCancelation);
+
+                                        #endregion
                                         #endregion
 
                                     }
@@ -2250,7 +2448,7 @@ namespace NewBot
 
                                         #region FinalText
                                         string FinalText = $@"#استخدام
-کد اگهی:{hiretag}
+کد اگهی:#{hiretag}
 
 توضیحات:
 {f.Message.Text}";
@@ -2265,11 +2463,20 @@ namespace NewBot
                                         InlineKeyboardButton.WithCallbackData("Block", $"{f.Message.From.Id}:{hiretag};HBlock"),
                                     }
                                 });
+                                        Telegram.Bot.Types.Message msg = null;
                                         foreach (var admin in SendToAdmins)
                                         {
                                             await bot.SendTextMessageAsync(admin.uID, $"Dear {admin.name}\n New Hire Project Request:");
-                                            await bot.SendTextMessageAsync(admin.uID, FinalText, replyMarkup: AdminController);
+                                            msg = await bot.SendTextMessageAsync(admin.uID, FinalText, replyMarkup: AdminController);
                                         }
+                                        #endregion
+
+                                        #region ProccessUserMessage
+
+                                        var sendToUser = await bot.SendTextMessageAsync(f.Message.From.Id, FinalText);
+                                        var userCancelation = new InlineKeyboardMarkup(new[] { new[] { InlineKeyboardButton.WithCallbackData("انصراف", $"remove*hire*{sendToUser.MessageId}*{hiretag}*{msg.Chat.Id}*{msg.MessageId}"), } });
+                                        await bot.EditMessageReplyMarkupAsync(chatId: f.Message.Chat.Id,
+                                            sendToUser.MessageId, replyMarkup: userCancelation);
                                         #endregion
                                     }
                                     #endregion

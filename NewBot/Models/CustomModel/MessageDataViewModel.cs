@@ -11,6 +11,7 @@ namespace NewBot.Models.CustomModel
         public string ChatID { get; set; }
         public int MessageID { get; set; }
         public string MessageText { get; set; }
+        public string customStautsText { get; set; }
     }
     
 }
