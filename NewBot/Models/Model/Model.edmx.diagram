@@ -12,9 +12,9 @@
         <EntityTypeShape EntityType="telbotZB_dbModel.ADSList" Width="1.5" PointX="2.375" PointY="3" />
         <EntityTypeShape EntityType="telbotZB_dbModel.Image" Width="1.5" PointX="0.75" PointY="3.25" />
         <EntityTypeShape EntityType="telbotZB_dbModel.user" Width="1.5" PointX="6.625" PointY="1.125" />
-        <EntityTypeShape EntityType="telbotZB_dbModel.AdsChannel" Width="1.5" PointX="1.5" PointY="5.625" />
-        <EntityTypeShape EntityType="telbotZB_dbModel.AdsGroup" Width="1.5" PointX="3.25" PointY="5.625" />
-      </Diagram>
+        <EntityTypeShape EntityType="telbotZB_dbModel.AdsChannel" Width="1.5" PointX="0.75" PointY="5.875" />
+        <EntityTypeShape EntityType="telbotZB_dbModel.AdsGroup" Width="1.5" PointX="2.75" PointY="5.875" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

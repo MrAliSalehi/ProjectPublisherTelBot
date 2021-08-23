@@ -16,7 +16,7 @@ namespace NewBot.Models.CustomModel
         public OutPutType OutPutType { get; set; }
         public dynamic OutPut { get; set; }
     }
-    public enum OutPutType{STRING,BOOL}
+    public enum OutPutType{STRING,BOOL,OBJECT}
     public enum AdsType { Channel, Group, Business }
     public enum AdsOperation { Get, Insert, Update, Delete }
 }

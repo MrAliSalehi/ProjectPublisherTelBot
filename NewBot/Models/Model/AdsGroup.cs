@@ -16,10 +16,10 @@ namespace NewBot.Models.Model
     {
         public int ID { get; set; }
         public string uID { get; set; }
+        public string ProjectID { get; set; }
         public string Link { get; set; }
         public string Disciption { get; set; }
         public Nullable<bool> IsGroup { get; set; }
         public Nullable<bool> Published { get; set; }
-        public string ProjectID { get; set; }
     }
 }

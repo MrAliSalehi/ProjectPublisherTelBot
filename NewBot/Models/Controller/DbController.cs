@@ -789,18 +789,84 @@ namespace NewBot.Models.Controller
                 {
                     #region Channel
                     case AdsType.Channel:
-                        switch (model.AdsOperation)
+                        Out.AdsType = AdsType.Channel;
+                        if (model.AdsChannel != null)
                         {
-                            case AdsOperation.Get:
-                                break;
-                            case AdsOperation.Insert:
-                                break;
-                            case AdsOperation.Update:
-                                break;
-                            case AdsOperation.Delete:
-                                break;
-                            default:
-                                break;
+                            switch (model.AdsOperation)
+                            {
+                                #region Get
+                                case AdsOperation.Get:
+                                    var search = await db.AdsChannels.SingleOrDefaultAsync(p => p.uID == model.AdsGroup.uID && p.ProjectID == model.AdsGroup.ProjectID);
+                                    Out.OutPutType = OutPutType.OBJECT;
+                                    Out.OutPut = search;
+                                    break;
+                                #endregion
+
+                                #region Insert
+                                case AdsOperation.Insert:
+                                    db.AdsChannels.Add(new AdsChannel() { uID = model.AdsGroup.uID, ProjectID = model.AdsGroup.ProjectID });
+                                    await db.SaveChangesAsync();
+                                    Out.OutPutType = OutPutType.BOOL;
+                                    Out.OutPut = true;
+                                    break;
+                                #endregion
+
+                                #region Update
+                                case AdsOperation.Update:
+                                    var find = await db.AdsChannels.SingleOrDefaultAsync(p =>
+                                        p.uID == model.AdsChannel.uID && p.ProjectID == model.AdsChannel.ProjectID);
+                                    Out.OutPutType = OutPutType.BOOL;
+                                    if (find != null)
+                                    {
+                                        if (model.AdsChannel.Disciption != null)
+                                        {
+                                            find.Disciption = model.AdsChannel.Disciption;
+                                        }
+                                        if (model.AdsChannel.Link != null)
+                                        {
+                                            find.Link = model.AdsChannel.Link;
+                                        }
+                                        if (model.AdsChannel.IsChannel != null)
+                                        {
+                                            find.IsChannel = model.AdsChannel.IsChannel;
+                                        }
+                                        if (model.AdsChannel.Published != null)
+                                        {
+                                            find.Published = model.AdsChannel.Published;
+                                        }
+                                        await db.SaveChangesAsync();
+                                        Out.OutPut = true;
+                                    }
+                                    else
+                                    {
+                                        Out.OutPut = false;
+                                    }
+                                    break;
+                                #endregion
+
+                                #region Delete
+                                case AdsOperation.Delete:
+                                    var IsExists = await db.AdsChannels.FirstOrDefaultAsync(p =>
+                                         p.uID == model.AdsChannel.uID && p.ProjectID == model.AdsChannel.ProjectID);
+                                    Out.OutPutType = OutPutType.BOOL;
+                                    if (IsExists != null)
+                                    {
+                                        db.AdsChannels.Remove(IsExists);
+                                        await db.SaveChangesAsync();
+                                        Out.OutPut = true;
+                                    }
+                                    else
+                                    {
+                                        Out.OutPut = false;
+                                    }
+                                    break;
+                                #endregion
+
+                                #region Default
+                                default:
+                                    break;
+                                    #endregion
+                            }
                         }
                         break;
                     #endregion
@@ -814,6 +880,9 @@ namespace NewBot.Models.Controller
                             {
                                 #region Get
                                 case AdsOperation.Get:
+                                    var search = await db.AdsGroups.SingleOrDefaultAsync(p => p.uID == model.AdsGroup.uID && p.ProjectID == model.AdsGroup.ProjectID);
+                                    Out.OutPutType = OutPutType.OBJECT;
+                                    Out.OutPut = search;
                                     break;
                                 #endregion
 
@@ -861,6 +930,19 @@ namespace NewBot.Models.Controller
 
                                 #region Delete
                                 case AdsOperation.Delete:
+                                    var IsExists = await db.AdsGroups.FirstOrDefaultAsync(p =>
+                                         p.uID == model.AdsGroup.uID && p.ProjectID == model.AdsGroup.ProjectID);
+                                    Out.OutPutType = OutPutType.BOOL;
+                                    if (IsExists != null)
+                                    {
+                                        db.AdsGroups.Remove(IsExists);
+                                        await db.SaveChangesAsync();
+                                        Out.OutPut = true;
+                                    }
+                                    else
+                                    {
+                                        Out.OutPut = false;
+                                    }
                                     break;
                                 #endregion
 

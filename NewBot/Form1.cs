@@ -350,14 +350,14 @@ namespace NewBot
 
             #region Remove Projects ByUser
             //remove*project*{sendToUser.MessageId}*{Tagg}*{msg.Chat.Id}*{msg.MessageId}
-            if (e.CallbackQuery.Data.StartsWith("remove"))
+            if (e.CallbackQuery.Data.StartsWith("remove") || e.CallbackQuery.Data.StartsWith("rm"))
             {
                 string[] procData = e.CallbackQuery.Data.Split('*');
                 string type = procData[1];
                 string messageID = procData[2];
                 string projectTag = procData[3];
-                string chatID = procData[4];
-                string adminMessageId = procData[5];
+                string chatID = string.IsNullOrEmpty(procData[4]) ? "" : procData[4];
+                string adminMessageId = string.IsNullOrEmpty(procData[5]) ? "" : procData[5];
                 switch (type)
                 {
                     #region Project
@@ -410,7 +410,32 @@ namespace NewBot
                     #endregion
 
                     #region Ads
-                    case "ads":
+                    case "ad":
+                        switch (chatID)
+                        {
+                            case "gp":
+                                var deleteGpAds = await controller.AdsAsync(new AdsModel()
+                                {
+                                    AdsType = AdsType.Group,
+                                    AdsOperation = AdsOperation.Delete,
+                                    AdsGroup = new AdsGroup() { uID = e.CallbackQuery.From.Id.ToString(), ProjectID = projectTag }
+                                });
+                                if (Convert.ToBoolean(deleteGpAds.OutPut))
+                                {
+                                    controller.UpdateUser(new user() { uID = e.CallbackQuery.From.Id.ToString(), projectstep = 0 });
+                                    await bot.EditMessageReplyMarkupAsync(e.CallbackQuery.Message.Chat.Id, Convert.ToInt32(messageID));
+                                    await bot.DeleteMessageAsync(e.CallbackQuery.Message.Chat.Id, Convert.ToInt32(messageID));
+                                    await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "کاربر گرامی \nاگهی شما پاک شد\nاگر از ثبت اگهیه پاک شده بیش از 48 ساعت میگذرد پیام ان در ربات پاک نمیشود\nولی دکمه ان پاک میشود");
+                                }
+                                else
+                                {
+                                    await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "این تبلیغ قبلا پاک شده است ", replyMarkup: supportIKM);
+                                }
+                                break;
+                            case "ch":
+                                break;
+                        }
+
                         break;
                     #endregion
 
@@ -454,7 +479,7 @@ namespace NewBot
             //UserID:ProjectID;Status
 
             var AdminList = controller.GetAllAdmins();
-            if (AdminList.Any(p => p.uID == e.CallbackQuery.From.Id) && !e.CallbackQuery.Data.StartsWith("deactive") && !e.CallbackQuery.Data.StartsWith("remove"))
+            if (AdminList.Any(p => p.uID == e.CallbackQuery.From.Id) && !e.CallbackQuery.Data.StartsWith("deactive") && !e.CallbackQuery.Data.StartsWith("remove") && !e.CallbackQuery.Data.StartsWith("rm"))
             {
                 try
                 {
@@ -1523,7 +1548,7 @@ namespace NewBot
                                         #region Shared
                                         await bot.SendTextMessageAsync(e.Message.From.Id, "اگهی شما ثبت شد\nپس از برسی توسط ادمین در ساعت مشخص شده در کانال قرار داده خواهد شد", replyMarkup: RegisteredUsersRKM);
                                         #endregion
-
+                                        //remove*project*{sendToUser.MessageId}*{Tagg}*{msg.Chat.Id}*{msg.MessageId}
                                         #region Group
                                         if (user.adsStep == 11)
                                         {
@@ -1533,10 +1558,24 @@ namespace NewBot
                                                 AdsOperation = AdsOperation.Update,
                                                 AdsGroup = new AdsGroup()
                                                 {
-                                                    uID = e.Message.From.Id.ToString(), ProjectID = Tagg,
+                                                    uID = e.Message.From.Id.ToString(),
+                                                    ProjectID = Tagg,
                                                     Link = e.Message.Text
                                                 }
                                             });
+                                            var getAds = await controller.AdsAsync(new AdsModel()
+                                            {
+                                                AdsType = AdsType.Group,
+                                                AdsOperation = AdsOperation.Get,
+                                                AdsGroup = new AdsGroup()
+                                                { uID = e.Message.From.Id.ToString(), ProjectID = Tagg }
+                                            });
+                                            var results = getAds.OutPut == null ? new AdsGroup() : getAds.OutPut as AdsGroup;
+                                            var sendToUser = await bot.SendTextMessageAsync(e.Message.From.Id, $"تبلیغ شما : \n {results.Disciption}\n{results.Link}");
+                                            var CancelationToken = new InlineKeyboardMarkup(new[] { new[] { InlineKeyboardButton.WithCallbackData("انصراف", $"rm*ad*{sendToUser.MessageId}*{Tagg}*gp* ") } });
+                                            await bot.EditMessageReplyMarkupAsync(sendToUser.Chat.Id,
+                                                sendToUser.MessageId, CancelationToken);
+
                                             controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 0 });
                                         }
                                         #endregion
@@ -1547,7 +1586,6 @@ namespace NewBot
                                             controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 22 });
                                         }
                                         #endregion
-
                                     }
                                     else
                                     {
