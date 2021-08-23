@@ -19,5 +19,6 @@ namespace NewBot.Models.Model
         public string UniqueID { get; set; }
         public string FileID { get; set; }
         public string Discription { get; set; }
+        public string ProjectID { get; set; }
     }
 }

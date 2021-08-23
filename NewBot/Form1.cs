@@ -825,6 +825,8 @@ namespace NewBot
 
                             if (CanPublish)
                             {
+                                await bot.SendTextMessageAsync(CallInfo[0], "اگهی تبلیغاتی شما توسط ادمین تایید شد", replyMarkup: RegisteredUsersRKM);
+                                controller.UpdateUser(new user() { uID = CallInfo[0], adsStep = 0 });
                                 EditAdminMessage(new MessageDataViewModel()
                                 {
                                     ChatID = e.CallbackQuery.Message.Chat.Id.ToString(),
@@ -832,27 +834,24 @@ namespace NewBot
                                     MessageText = e.CallbackQuery.Message.Text == null
                                             ? e.CallbackQuery.Message.Caption
                                             : e.CallbackQuery.Message.Text,
-                                },
-                                    ContentType.Ads, ContentStatus.Accepted,
-                                    msgType: CallInfo[1].StartsWith("none>")
-                                        ? ContentMessageType.Text
-                                        : ContentMessageType.Caption);
-                                await bot.SendTextMessageAsync(CallInfo[0], "اگهی تبلیغاتی شما توسط ادمین تایید شد",
-                                    replyMarkup: RegisteredUsersRKM);
-                                controller.UpdateUser(new user() { uID = CallInfo[0], adsStep = 0 });
+                                }, ContentType.Ads, ContentStatus.Accepted, CallInfo[1].StartsWith("none>") ? ContentMessageType.Text : ContentMessageType.Caption);
+
                                 if (CallInfo[1].StartsWith("none>"))
                                 {
                                     string[] adsplit = CallInfo[1].Split('>');
-                                    var getad = controller.GetAds(
-                                        new ADSList() { uID = CallInfo[0], GUID = adsplit[1] });
-                                    await bot.SendTextMessageAsync(ForceJoinChannelID, $"#تبلیغات\n{getad.discription}");
+                                    var getAd = await controller.AdsAsync(new AdsModel()
+                                    {
+                                        AdsOperation = AdsOperation.Get,
+                                        AdsType = AdsType.Business,
+                                        AdsBusiness = new AdsBusiness() { uID = CallInfo[0], ProjectID = adsplit[1] }
+                                    });
+                                    var results = getAd.OutPut as AdsBusiness;
+                                    await bot.SendTextMessageAsync(ForceJoinChannelID, $"#تبلیغات\n{results.Discription}");
                                 }
                                 else
                                 {
-                                    var AdsImage = controller.GetImage(new Models.Model.Image()
-                                    { uID = CallInfo[0], UniqueID = CallInfo[1] });
-                                    await bot.SendPhotoAsync(ForceJoinChannelID, AdsImage.FileID,
-                                        $"#تبلیغات\n{AdsImage.Discription}");
+                                    var AdsImage = await controller.GetImageAsync(new Models.Model.Image() { uID = CallInfo[0], UniqueID = CallInfo[1], ProjectID =Tagg });
+                                    await bot.SendPhotoAsync(ForceJoinChannelID, AdsImage.FileID, $"#تبلیغات\n{AdsImage.Discription}");
                                 }
                             }
                             else
@@ -1318,7 +1317,7 @@ namespace NewBot
             return _keybrd;
         }
         [Obsolete]
-        public async void PictureHandler(MessageEventArgs a, user user)
+        public async void BusinessHandler(MessageEventArgs a, user user)
         {
             try
             {
@@ -1363,17 +1362,25 @@ namespace NewBot
                     {
                         var pic = a.Message.Photo;
                         var selectpic = pic[0].Height * pic[0].Width > pic[1].Height * pic[1].Width ? pic[0] : pic[1];
-                        controller.UpdateAds(new ADSList()
+                        await controller.AdsAsync(new AdsModel()
                         {
-                            uID = a.Message.From.Id.ToString(),
-                            discription = a.Message.Caption,
-                            pic = selectpic.FileId
+                            AdsType = AdsType.Business,
+                            AdsOperation = AdsOperation.Update,
+                            AdsBusiness = new AdsBusiness()
+                            {
+                                uID = a.Message.From.Id.ToString(),
+                                ProjectID = Tagg,
+                                Discription = a.Message.Caption,
+                                PictureUID = selectpic.FileId
+                            }
                         });
-                        controller.InsertNewImage(new Models.Model.Image()
+
+                        await controller.InsertNewImageAsync(new Models.Model.Image()
                         {
                             uID = a.Message.From.Id.ToString(),
                             UniqueID = selectpic.FileUniqueId,
                             FileID = selectpic.FileId,
+                            ProjectID = Tagg,
                             Discription = a.Message.Caption
                         });
                         await bot.SendTextMessageAsync(a.Message.From.Id, "بنر تبلیغاتی شما ثبت شد و پس از برسی در کانال قرار خواهد گرفت");
@@ -1769,7 +1776,7 @@ namespace NewBot
                         switch (user.adsStep)
                         {
                             case 3:
-                                PictureHandler(e, user);
+                                BusinessHandler(e, user);
                                 break;
                             default:
                                 break;
@@ -2017,7 +2024,7 @@ namespace NewBot
                             }
                             else
                             {
-                                var getIMG = controller.GetImage(new Models.Model.Image() { uID = callback.id, UniqueID = callback.Image });
+                                var getIMG = await controller.GetImageAsync(new Models.Model.Image() { uID = callback.id, UniqueID = callback.Image,ProjectID = Tagg});
                                 await bot.SendPhotoAsync(admin.uID, getIMG.FileID, callback.ProjectTosend, replyMarkup: AdminController);
                             }
                             break;

@@ -958,18 +958,81 @@ namespace NewBot.Models.Controller
 
                     #region Business
                     case AdsType.Business:
-                        switch (model.AdsOperation)
+                        if (model.AdsBusiness != null)
                         {
-                            case AdsOperation.Get:
-                                break;
-                            case AdsOperation.Insert:
-                                break;
-                            case AdsOperation.Update:
-                                break;
-                            case AdsOperation.Delete:
-                                break;
-                            default:
-                                break;
+                            Out.AdsType = AdsType.Business;
+                            switch (model.AdsOperation)
+                            {
+                                #region Get
+                                case AdsOperation.Get:
+                                    var search = await db.AdsBusinesses.SingleOrDefaultAsync(p =>
+                                        p.uID == model.AdsBusiness.uID && p.ProjectID == model.AdsBusiness.ProjectID);
+                                    Out.OutPutType = OutPutType.OBJECT;
+                                    Out.OutPut = search;
+                                    break;
+                                #endregion
+
+                                #region Insert
+                                case AdsOperation.Insert:
+                                    db.AdsBusinesses.Add(new AdsBusiness() { uID = model.AdsBusiness.uID, ProjectID = model.AdsBusiness.ProjectID });
+                                    await db.SaveChangesAsync();
+                                    Out.OutPutType = OutPutType.BOOL;
+                                    Out.OutPut = true;
+                                    break;
+                                #endregion
+
+                                #region Update
+                                case AdsOperation.Update:
+                                    var find = await db.AdsBusinesses.SingleOrDefaultAsync(p =>
+                                        p.uID == model.AdsBusiness.uID && p.ProjectID == model.AdsBusiness.ProjectID);
+                                    Out.OutPutType = OutPutType.BOOL;
+                                    if (find != null)
+                                    {
+                                        if (model.AdsBusiness.Published != null)
+                                        {
+                                            find.Published = model.AdsBusiness.Published;
+                                        }
+                                        if (model.AdsBusiness.PictureUID != null)
+                                        {
+                                            find.PictureUID = model.AdsBusiness.PictureUID;
+                                        }
+                                        if (model.AdsBusiness.Discription != null)
+                                        {
+                                            find.Discription = model.AdsBusiness.Discription;
+                                        }
+                                        await db.SaveChangesAsync();
+                                        Out.OutPut = true;
+                                    }
+                                    else
+                                    {
+                                        Out.OutPut = false;
+                                    }
+                                    break;
+                                #endregion
+
+                                #region Delete
+                                case AdsOperation.Delete:
+                                    Out.OutPutType = OutPutType.BOOL;
+                                    var isExists = await db.AdsBusinesses.FirstOrDefaultAsync(p =>
+                                        p.uID == model.AdsBusiness.uID && p.ProjectID == model.AdsBusiness.ProjectID);
+                                    if (isExists != null)
+                                    {
+                                        db.AdsBusinesses.Remove(isExists);
+                                        await db.SaveChangesAsync();
+                                        Out.OutPut = false;
+                                    }
+                                    else
+                                    {
+                                        Out.OutPut = false;
+                                    }
+                                    break;
+                                #endregion
+
+                                #region Default
+                                default:
+                                    break;
+                                    #endregion
+                            }
                         }
                         break;
                     #endregion
@@ -1149,14 +1212,13 @@ namespace NewBot.Models.Controller
         #region AdsImageController
 
         #region Get
-        public Image GetImage(Image i)
+        public async Task<Image> GetImageAsync(Image img)
         {
             try
             {
                 using (telbotZB_dbEntities db = new telbotZB_dbEntities())
                 {
-                    var res = db.Images.Where(p => p.UniqueID == i.UniqueID && p.uID == i.uID).ToList().SingleOrDefault();
-                    return res;
+                    return await db.Images.SingleOrDefaultAsync(p => p.uID == img.uID && p.ProjectID == img.ProjectID && p.UniqueID == img.UniqueID);
                 }
             }
             catch (Exception)
@@ -1168,16 +1230,23 @@ namespace NewBot.Models.Controller
         #endregion
 
         #region Insert
-        public bool InsertNewImage(Image image)
+        public async Task<bool> InsertNewImageAsync(Image image)
         {
             try
             {
                 using (telbotZB_dbEntities db = new telbotZB_dbEntities())
                 {
-                    if (!db.Images.Any(I => I.UniqueID == image.UniqueID))
+                    if (!db.Images.Any(I => I.ProjectID == image.ProjectID))
                     {
-                        db.Images.Add(new Image() { uID = image.uID, UniqueID = image.UniqueID, FileID = image.FileID, Discription = image.Discription });
-                        db.SaveChanges();
+                        db.Images.Add(new Image()
+                        {
+                            uID = image.uID,
+                            UniqueID = image.UniqueID,
+                            FileID = image.FileID,
+                            ProjectID = image.ProjectID,
+                            Discription = image.Discription
+                        });
+                        await db.SaveChangesAsync();
                     }
                     return true;
                 }

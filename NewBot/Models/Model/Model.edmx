@@ -95,9 +95,10 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="uID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ProjectID" Type="varchar" MaxLength="350" Nullable="false" />
           <Property Name="UniqueID" Type="varchar" MaxLength="250" />
           <Property Name="FileID" Type="varchar" MaxLength="350" />
-          <Property Name="Discription" Type="varchar" MaxLength="500" />
+          <Property Name="Discription" Type="nvarchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="Projects">
           <Key>
@@ -240,7 +241,8 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <Property Name="uID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="UniqueID" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <Property Name="FileID" Type="String" MaxLength="350" FixedLength="false" Unicode="false" />
-          <Property Name="Discription" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Discription" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="ProjectID" Type="String" Nullable="false" MaxLength="350" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="user">
           <Key>
@@ -376,6 +378,7 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <EntitySetMapping Name="Images">
             <EntityTypeMapping TypeName="telbotZB_dbModel.Image">
               <MappingFragment StoreEntitySet="Images">
+                <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
                 <ScalarProperty Name="Discription" ColumnName="Discription" />
                 <ScalarProperty Name="FileID" ColumnName="FileID" />
                 <ScalarProperty Name="UniqueID" ColumnName="UniqueID" />
