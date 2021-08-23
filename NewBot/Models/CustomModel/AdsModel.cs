@@ -8,6 +8,7 @@ namespace NewBot.Models.CustomModel
         public AdsOperation AdsOperation { get; set; }
         public AdsGroup AdsGroup { get; set; }
         public AdsChannel AdsChannel { get; set; }
+        public AdsBusiness AdsBusiness { get; set; }
     }
 
     public class AdsOutPutModel

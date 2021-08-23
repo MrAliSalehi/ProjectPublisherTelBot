@@ -796,7 +796,7 @@ namespace NewBot.Models.Controller
                             {
                                 #region Get
                                 case AdsOperation.Get:
-                                    var search = await db.AdsChannels.SingleOrDefaultAsync(p => p.uID == model.AdsGroup.uID && p.ProjectID == model.AdsGroup.ProjectID);
+                                    var search = await db.AdsChannels.SingleOrDefaultAsync(p => p.uID == model.AdsChannel.uID && p.ProjectID == model.AdsChannel.ProjectID);
                                     Out.OutPutType = OutPutType.OBJECT;
                                     Out.OutPut = search;
                                     break;
@@ -804,7 +804,7 @@ namespace NewBot.Models.Controller
 
                                 #region Insert
                                 case AdsOperation.Insert:
-                                    db.AdsChannels.Add(new AdsChannel() { uID = model.AdsGroup.uID, ProjectID = model.AdsGroup.ProjectID });
+                                    db.AdsChannels.Add(new AdsChannel() { uID = model.AdsChannel.uID, ProjectID = model.AdsChannel.ProjectID });
                                     await db.SaveChangesAsync();
                                     Out.OutPutType = OutPutType.BOOL;
                                     Out.OutPut = true;

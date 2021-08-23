@@ -76,8 +76,8 @@ namespace NewBot.Security
                         string s = BytedData.RsaEncryption(Rsa.ExportParameters(false),false).ByteToString().KeyShorter();
                         return FinalKey;
                     case Type.Decrypt:
-                        byte[] DeCryptedData = Decrypt(encryptionModel.DataToDecrypt, Rsa.ExportParameters(true), true);
-                        return ByteConverter.GetString(DeCryptedData);
+                        byte[] deCryptedData = Decrypt(encryptionModel.DataToDecrypt, Rsa.ExportParameters(true), true);
+                        return ByteConverter.GetString(deCryptedData);
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

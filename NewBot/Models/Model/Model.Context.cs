@@ -34,5 +34,6 @@ namespace NewBot.Models.Model
         public virtual DbSet<user> users { get; set; }
         public virtual DbSet<AdsChannel> AdsChannels { get; set; }
         public virtual DbSet<AdsGroup> AdsGroups { get; set; }
+        public virtual DbSet<AdsBusiness> AdsBusinesses { get; set; }
     }
 }

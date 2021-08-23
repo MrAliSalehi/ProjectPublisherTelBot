@@ -87,6 +87,9 @@
     <Compile Include="Models\Model\admin.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Model\AdsBusiness.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Model\AdsChannel.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>

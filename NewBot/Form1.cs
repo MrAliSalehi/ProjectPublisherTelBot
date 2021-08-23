@@ -1,4 +1,7 @@
-﻿using NewBot.Models.Controller;
+﻿//Db Query For business || Crud
+
+
+using NewBot.Models.Controller;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -413,6 +416,7 @@ namespace NewBot
                     case "ad":
                         switch (chatID)
                         {
+                            #region Group
                             case "gp":
                                 var deleteGpAds = await controller.AdsAsync(new AdsModel()
                                 {
@@ -422,7 +426,6 @@ namespace NewBot
                                 });
                                 if (Convert.ToBoolean(deleteGpAds.OutPut))
                                 {
-                                    controller.UpdateUser(new user() { uID = e.CallbackQuery.From.Id.ToString(), projectstep = 0 });
                                     await bot.EditMessageReplyMarkupAsync(e.CallbackQuery.Message.Chat.Id, Convert.ToInt32(messageID));
                                     await bot.DeleteMessageAsync(e.CallbackQuery.Message.Chat.Id, Convert.ToInt32(messageID));
                                     await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "کاربر گرامی \nاگهی شما پاک شد\nاگر از ثبت اگهیه پاک شده بیش از 48 ساعت میگذرد پیام ان در ربات پاک نمیشود\nولی دکمه ان پاک میشود");
@@ -432,8 +435,28 @@ namespace NewBot
                                     await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "این تبلیغ قبلا پاک شده است ", replyMarkup: supportIKM);
                                 }
                                 break;
+                            #endregion
+
+                            #region Channel
                             case "ch":
+                                var deleteChAds = await controller.AdsAsync(new AdsModel()
+                                {
+                                    AdsType = AdsType.Channel,
+                                    AdsOperation = AdsOperation.Delete,
+                                    AdsChannel = new AdsChannel() { uID = e.CallbackQuery.From.Id.ToString(), ProjectID = projectTag }
+                                });
+                                if (Convert.ToBoolean(deleteChAds.OutPut))
+                                {
+                                    await bot.EditMessageReplyMarkupAsync(e.CallbackQuery.Message.Chat.Id, Convert.ToInt32(messageID));
+                                    await bot.DeleteMessageAsync(e.CallbackQuery.Message.Chat.Id, Convert.ToInt32(messageID));
+                                    await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "کاربر گرامی \nاگهی شما پاک شد\nاگر از ثبت اگهیه پاک شده بیش از 48 ساعت میگذرد پیام ان در ربات پاک نمیشود\nولی دکمه ان پاک میشود");
+                                }
+                                else
+                                {
+                                    await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "این تبلیغ قبلا پاک شده است ", replyMarkup: supportIKM);
+                                }
                                 break;
+                                #endregion
                         }
 
                         break;
@@ -1304,8 +1327,17 @@ namespace NewBot
                 {
                     if (a.Message.Text.Length > 10)
                     {
-                        Guid id = Guid.NewGuid();
-                        controller.UpdateAds(new ADSList() { uID = a.Message.From.Id.ToString(), discription = a.Message.Text, GUID = $"{id}" });
+                        await controller.AdsAsync(new AdsModel()
+                        {
+                            AdsType = AdsType.Business,
+                            AdsOperation = AdsOperation.Update,
+                            AdsBusiness = new AdsBusiness()
+                            {
+                                uID = a.Message.From.Id.ToString(),
+                                ProjectID = Tagg,
+                                Discription = a.Message.Text
+                            }
+                        });
                         await bot.SendTextMessageAsync(a.Message.From.Id, "بنر تبلیغاتی شما ثبت شد و پس از برسی در کانال قرار خواهد گرفت");
                         SendToAdmins(ProjectMode.Ads, ButtonMode.AcceptBlockReject,
                             new CallBackModel()
@@ -1313,7 +1345,7 @@ namespace NewBot
                                 id = a.Message.From.Id.ToString(),
                                 ProjectTosend = a.Message.Text,
                                 StartIndex = "Ad",
-                                Image = $"none>{id}"
+                                Image = $"none>{Tagg}"
                             }
                         );
                     }
@@ -1419,6 +1451,7 @@ namespace NewBot
             {
                 switch (e.Message.Text)
                 {
+                    #region Group&Channel
                     case "تبلیغ گروه":
                     case "تبلیغ کانال":
                         if (user.adsStep == 0)
@@ -1430,7 +1463,7 @@ namespace NewBot
                                 var gid = Guid.NewGuid();
                                 Tagg = gid.ToString();
                                 #endregion
-                                //2,32,32,new Byte[]{2,2,3,5,7,8,4,4}
+
                                 #region Group
                                 if (e.Message.Text == "تبلیغ گروه")
                                 {
@@ -1465,14 +1498,24 @@ namespace NewBot
                         }
                         break;
 
+                    #endregion
+
+                    #region business
                     case "تبلیغ کسب و کار":
                         if (user.adsStep == 0)
                         {
                             if (user.finishedregister == true)
                             {
+                                var gid = Guid.NewGuid();
+                                Tagg = gid.ToString();
                                 await bot.SendTextMessageAsync(e.Message.From.Id, "لطفا بنر تبلیغاتی خود را ارسال کنید\nبنر شما میتواند شما عکس به همراه متن و لینک باشد");
+                                await controller.AdsAsync(new AdsModel()
+                                {
+                                    AdsType = AdsType.Business,
+                                    AdsOperation = AdsOperation.Insert,
+                                    AdsBusiness = new AdsBusiness() { uID = e.Message.From.Id.ToString(), ProjectID = gid.ToString() }
+                                });
                                 controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 3 });
-                                controller.InsertNewAds(new ADSList() { uID = e.Message.From.Id.ToString(), OneLiner = false });
                             }
                             else
                             {
@@ -1480,9 +1523,14 @@ namespace NewBot
                             }
                         }
                         break;
+                    #endregion
+
+                    #region CancelationToken
                     case "بازگشت به صفحه اصلی":
                         await bot.SendTextMessageAsync(e.Message.From.Id, "شما در صفحه اصلی هستید", replyMarkup: user.finishedregister == true ? RegisteredUsersRKM : mainRKM);
                         break;
+                    #endregion
+
                     default:
                         break;
                 }
@@ -1575,7 +1623,6 @@ namespace NewBot
                                             var CancelationToken = new InlineKeyboardMarkup(new[] { new[] { InlineKeyboardButton.WithCallbackData("انصراف", $"rm*ad*{sendToUser.MessageId}*{Tagg}*gp* ") } });
                                             await bot.EditMessageReplyMarkupAsync(sendToUser.Chat.Id,
                                                 sendToUser.MessageId, CancelationToken);
-
                                             controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 0 });
                                         }
                                         #endregion
@@ -1583,7 +1630,34 @@ namespace NewBot
                                         #region Channel
                                         else
                                         {
-                                            controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 22 });
+                                            await controller.AdsAsync(new AdsModel()
+                                            {
+                                                AdsType = AdsType.Channel,
+                                                AdsOperation = AdsOperation.Update,
+                                                AdsChannel = new AdsChannel()
+                                                {
+                                                    uID = e.Message.From.Id.ToString(),
+                                                    ProjectID = Tagg,
+                                                    Link = e.Message.Text
+                                                }
+                                            });
+                                            var getAdsChannel = await controller.AdsAsync(new AdsModel()
+                                            {
+                                                AdsType = AdsType.Channel,
+                                                AdsOperation = AdsOperation.Get,
+                                                AdsChannel = new AdsChannel()
+                                                {
+                                                    uID = e.Message.From.Id.ToString(),
+                                                    ProjectID = Tagg
+                                                }
+                                            });
+                                            var results2 = getAdsChannel.OutPut == null
+                                                ? new AdsChannel()
+                                                : getAdsChannel.OutPut as AdsChannel;
+                                            var sendToUser = await bot.SendTextMessageAsync(e.Message.From.Id, $"تبلیغ شما : \n {results2.Disciption}\n{results2.Link}");
+                                            var cancelationToken = new InlineKeyboardMarkup(new[] { new[] { InlineKeyboardButton.WithCallbackData("انصراف", $"rm*ad*{sendToUser.MessageId}*{Tagg}*ch* ") } });
+                                            await bot.EditMessageReplyMarkupAsync(sendToUser.Chat.Id, sendToUser.MessageId, cancelationToken);
+                                            controller.UpdateUser(new user() { uID = e.Message.From.Id.ToString(), adsStep = 0 });
                                         }
                                         #endregion
                                     }
@@ -1695,11 +1769,15 @@ namespace NewBot
                         switch (user.adsStep)
                         {
                             case 3:
-                                PictureHandler(e, user: user);
+                                PictureHandler(e, user);
                                 break;
                             default:
                                 break;
                         }
+                    }
+                    else
+                    {
+                        await bot.SendTextMessageAsync(e.Message.From.Id, "بنر شما فقط میتواند عکس و متن باشد", replyMarkup: ProfileMenuRKM);
                     }
 
                     #endregion
