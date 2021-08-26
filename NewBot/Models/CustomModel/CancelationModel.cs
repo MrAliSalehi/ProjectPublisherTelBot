@@ -7,7 +7,7 @@ namespace NewBot.Models.CustomModel
         [System.Obsolete]
         public CallbackQueryEventArgs EArgs { get; set; }
         public string MessageId { get; set; }
-        public CancelForAdminModel CancelForAdminModel { get; set; }
+        public CancelForAdminModel CancelForAdminModel { get; set; } = null;
     }
 
     public class CancelForAdminModel

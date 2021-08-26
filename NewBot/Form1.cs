@@ -1,25 +1,20 @@
-﻿//Db Query For business || Crud
-
-
+﻿using NewBot.Models.Model;
 using NewBot.Models.Controller;
+using NewBot.Models.CustomModel;
+using NewBot.Security.Extensions.CallBacks;
+using static NewBot.Models.CustomModel.CallBackModel;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
+using System.Drawing;
 using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using NewBot.Models.Model;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using NewBot.Models.CustomModel;
-using NewBot.Security;
-using NewBot.Security.Extensions.CallBacks;
-using Telegram.Bot.Exceptions;
-using static NewBot.Models.CustomModel.CallBackModel;
 namespace NewBot
 {
     public partial class Form1 : Form
@@ -303,19 +298,19 @@ namespace NewBot
                     #endregion
 
                     #region Channel Proccess
-                    bot.EditMessageReplyMarkupAsync(chatId: ForceJoinChannelID, messageId: Convert.ToInt32(getproj.ChnnlMssgID));
-                    bot.EditMessageTextAsync(chatId: ForceJoinChannelID, messageId: Convert.ToInt32(getproj.ChnnlMssgID), projectTXT);
+                    await bot.EditMessageReplyMarkupAsync(chatId: ForceJoinChannelID, messageId: Convert.ToInt32(getproj.ChnnlMssgID));
+                    await bot.EditMessageTextAsync(chatId: ForceJoinChannelID, messageId: Convert.ToInt32(getproj.ChnnlMssgID), projectTXT);
                     #endregion
 
                     #region User Proccess
-                    bot.EditMessageTextAsync(chatId: e.CallbackQuery.Message.Chat.Id, messageId: e.CallbackQuery.Message.MessageId, $"{e.CallbackQuery.Message.Text}\n\n❌واگذار شد❌");
-                    bot.EditMessageReplyMarkupAsync(chatId: e.CallbackQuery.Message.Chat.Id, messageId: e.CallbackQuery.Message.MessageId);
-                    bot.SendTextMessageAsync(e.CallbackQuery.From.Id, $"پروژه شما با کد #{projtag[1]} با موفقیت غیر فعال شد");
+                    await bot.EditMessageTextAsync(chatId: e.CallbackQuery.Message.Chat.Id, messageId: e.CallbackQuery.Message.MessageId, $"{e.CallbackQuery.Message.Text}\n\n❌واگذار شد❌");
+                    await bot.EditMessageReplyMarkupAsync(chatId: e.CallbackQuery.Message.Chat.Id, messageId: e.CallbackQuery.Message.MessageId);
+                    await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, $"پروژه شما با کد #{projtag[1]} با موفقیت غیر فعال شد");
                     #endregion
                 }
                 else
                 {
-                    bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "این پروژه از واگذار شده است");
+                    await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, "این پروژه از واگذار شده است");
                 }
                 #endregion
 
@@ -342,14 +337,14 @@ namespace NewBot
                 #endregion
 
                 #region Channel Proccess
-                bot.EditMessageReplyMarkupAsync(chatId: ForceJoinChannelID, messageId: Convert.ToInt32(getHireProject.ChnnlMssgID));
-                bot.EditMessageTextAsync(chatId: ForceJoinChannelID, messageId: Convert.ToInt32(getHireProject.ChnnlMssgID), HireTXT);
+                await bot.EditMessageReplyMarkupAsync(chatId: ForceJoinChannelID, messageId: Convert.ToInt32(getHireProject.ChnnlMssgID));
+                await bot.EditMessageTextAsync(chatId: ForceJoinChannelID, messageId: Convert.ToInt32(getHireProject.ChnnlMssgID), HireTXT);
                 #endregion
 
                 #region User Proccess
-                bot.EditMessageTextAsync(chatId: e.CallbackQuery.Message.Chat.Id, messageId: e.CallbackQuery.Message.MessageId, $"{e.CallbackQuery.Message.Text}\n\n❌واگذار شد❌");
-                bot.EditMessageReplyMarkupAsync(chatId: e.CallbackQuery.Message.Chat.Id, messageId: e.CallbackQuery.Message.MessageId);
-                bot.SendTextMessageAsync(e.CallbackQuery.From.Id, $"اگهی استخدام شما با کد #{hiretag[1]} با موفقیت غیر فعال شد");
+                await bot.EditMessageTextAsync(chatId: e.CallbackQuery.Message.Chat.Id, messageId: e.CallbackQuery.Message.MessageId, $"{e.CallbackQuery.Message.Text}\n\n❌واگذار شد❌");
+                await bot.EditMessageReplyMarkupAsync(chatId: e.CallbackQuery.Message.Chat.Id, messageId: e.CallbackQuery.Message.MessageId);
+                await bot.SendTextMessageAsync(e.CallbackQuery.From.Id, $"اگهی استخدام شما با کد #{hiretag[1]} با موفقیت غیر فعال شد");
                 #endregion
             }
             #endregion
@@ -425,7 +420,7 @@ namespace NewBot
                                 ChatID = chatID,
                                 MessageID = Convert.ToInt32(adminMessageId),
                                 MessageText = e.CallbackQuery.Message.Text
-                            }, ContentType.Project, ContentStatus.none, ContentMessageType.Text);
+                            }, ContentType.Hire, ContentStatus.none, ContentMessageType.Text);
                         }
                         else
                         {
@@ -528,7 +523,18 @@ namespace NewBot
                                 if (Convert.ToBoolean(deleteAdsWithImage.OutPut))
                                 {
                                     await controller.DeleteImageAsync(new Models.Model.Image() { uID = e.CallbackQuery.From.Id.ToString(), ProjectID = projectTag });
-                                    await CancelUserProjectAsync(new CancelationModel() { EArgs = e, MessageId = messageID });
+                                    await CancelUserProjectAsync(
+                                        new CancelationModel()
+                                        {
+                                            EArgs = e,
+                                            MessageId = messageID,
+                                            CancelForAdminModel = new CancelForAdminModel()
+                                            {
+                                                ChatId = adminChatIdAndMessageId[0],
+                                                MessageId = adminChatIdAndMessageId[1],
+                                                MediaType = MediaType.Photo
+                                            }
+                                        });
                                 }
                                 else
                                 {
@@ -723,7 +729,7 @@ namespace NewBot
 
                         if (AdminCall[1] == "Reject")
                         {
-                            bot.SendTextMessageAsync(CallInfo[0],
+                            await bot.SendTextMessageAsync(CallInfo[0],
                                 "اگهی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید",
                                 replyMarkup: RegisteredUsersRKM);
                             EditAdminMessage(new MessageDataViewModel()
@@ -752,7 +758,7 @@ namespace NewBot
                             },
                                 ContentType.Project, ContentStatus.Blocked, ContentMessageType.Text);
                             controller.UpdateUser(new user() { uID = CallInfo[0], IsBanned = true });
-                            bot.SendTextMessageAsync(CallInfo[0], "شما توسط ادمین بن شدید");
+                            await bot.SendTextMessageAsync(CallInfo[0], "شما توسط ادمین بن شدید");
                         }
 
                         #endregion
@@ -850,7 +856,7 @@ namespace NewBot
                             controller.ConfirmHireProject(new HireList()
                             { @checked = false, ProjectID = CallInfo[1], employeeID = CallInfo[0] });
                             controller.UpdateUser(new user() { uID = CallInfo[0], projectstep = 0, ishireing = false });
-                            bot.SendTextMessageAsync(CallInfo[0],
+                            await bot.SendTextMessageAsync(CallInfo[0],
                                 "اگهی استخدامی شما توسط ادمین رد شد \nلطفا قوانین را مطالعه نموده و سپس اگهی خود را مجدد ارسال نمایید",
                                 replyMarkup: RegisteredUsersRKM);
                         }
@@ -868,7 +874,7 @@ namespace NewBot
                                 MessageText = e.CallbackQuery.Message.Text,
                             },
                                 ContentType.Hire, ContentStatus.Blocked, ContentMessageType.Text);
-                            bot.SendTextMessageAsync(CallInfo[0], "شما توسط ادمین بن شدید");
+                            await bot.SendTextMessageAsync(CallInfo[0], "شما توسط ادمین بن شدید");
                             controller.UpdateUser(new user() { uID = CallInfo[0], IsBanned = true });
                         }
 
@@ -985,7 +991,7 @@ namespace NewBot
                                 msgType: CallInfo[1].StartsWith("none>")
                                     ? ContentMessageType.Text
                                     : ContentMessageType.Caption);
-                            bot.SendTextMessageAsync(CallInfo[0], "شما توسط ادمین بن شدید");
+                            await bot.SendTextMessageAsync(CallInfo[0], "شما توسط ادمین بن شدید");
                             controller.UpdateUser(new user() { uID = CallInfo[0], IsBanned = true });
                         }
 
@@ -1265,19 +1271,22 @@ namespace NewBot
                 #endregion
 
                 #region AdminEditation
-                await bot.EditMessageReplyMarkupAsync(chatId: info.CancelForAdminModel.ChatId, messageId: Convert.ToInt32(info.CancelForAdminModel.MessageId));
-                switch (info.CancelForAdminModel.MediaType)
+                if (info.CancelForAdminModel != null)
                 {
-                    case MediaType.Text:
-                        await bot.EditMessageTextAsync(info.CancelForAdminModel.ChatId,
-                            Convert.ToInt32(info.CancelForAdminModel.MessageId), "<i>This Post Has Been Canceled By User</i>", parseMode: ParseMode.Html);
-                        break;
-                    case MediaType.Photo:
-                        await bot.EditMessageCaptionAsync(chatId: info.CancelForAdminModel.ChatId,
-                            Convert.ToInt32(info.CancelForAdminModel.MessageId), "<i>This Post Has Been Canceled By User</i>", parseMode: ParseMode.Html);
-                        break;
-                    default:
-                        break;
+                    await bot.EditMessageReplyMarkupAsync(chatId: info.CancelForAdminModel.ChatId, messageId: Convert.ToInt32(info.CancelForAdminModel.MessageId));
+                    switch (info.CancelForAdminModel.MediaType)
+                    {
+                        case MediaType.Text:
+                            await bot.EditMessageTextAsync(info.CancelForAdminModel.ChatId,
+                                Convert.ToInt32(info.CancelForAdminModel.MessageId), "<i>This Post Has Been Canceled By User</i>", parseMode: ParseMode.Html);
+                            break;
+                        case MediaType.Photo:
+                            await bot.EditMessageCaptionAsync(chatId: info.CancelForAdminModel.ChatId,
+                                Convert.ToInt32(info.CancelForAdminModel.MessageId), "<i>This Post Has Been Canceled By User</i>", parseMode: ParseMode.Html);
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 #endregion
             }
@@ -1514,10 +1523,11 @@ namespace NewBot
                         });
                         await bot.SendTextMessageAsync(a.Message.From.Id, "بنر تبلیغاتی شما ثبت شد و پس از برسی در کانال قرار خواهد گرفت \n اگهی شما:", replyMarkup: ADSRKM);
                         var sendToUser = await bot.SendPhotoAsync(a.Message.From.Id, selectpic.FileId, $"{a.Message.Caption}");
-                        var CancelationToken = new InlineKeyboardMarkup(new[] { new[] { InlineKeyboardButton.WithCallbackData("انصراف", $"rm*ad*{sendToUser.MessageId}*{Tagg}*bsI* ") } });
+                        var sendToAdmin = await SendToAdmins(ProjectMode.Ads, ButtonMode.AcceptBlockReject, new CallBackModel() { id = a.Message.From.Id.ToString(), Image = selectpic.FileUniqueId, ProjectTosend = a.Message.Caption, StartIndex = "Ad" });
+                        string callBack = await $"rm*ad*{sendToUser.MessageId}*{Tagg}*bsI*{sendToAdmin.Chat.Id}-{sendToAdmin.MessageId}".CallBackHandlerAsync();
+                        var CancelationToken = new InlineKeyboardMarkup(new[] { new[] { InlineKeyboardButton.WithCallbackData("انصراف", callBack) } });
                         await bot.EditMessageReplyMarkupAsync(sendToUser.Chat.Id, sendToUser.MessageId,
                             CancelationToken);
-                        SendToAdmins(ProjectMode.Ads, ButtonMode.AcceptBlockReject, new CallBackModel() { id = a.Message.From.Id.ToString(), Image = selectpic.FileUniqueId, ProjectTosend = a.Message.Caption, StartIndex = "Ad" });
                     }
                     else
                     {
@@ -1843,7 +1853,7 @@ namespace NewBot
                                     {
                                         #region Project
                                         case TagType.Project:
-                                            SendToAdmins(
+                                            await SendToAdmins(
                                                 ProjectMode.Project,
                                                 ButtonMode.AcceptBlockReject,
                                                 new CallBackModel()
@@ -1860,7 +1870,7 @@ namespace NewBot
                                         #region Hire
                                         case TagType.Hire:
 
-                                            SendToAdmins(
+                                            await SendToAdmins(
                                                 ProjectMode.Hire,
                                                 ButtonMode.AcceptBlockReject,
                                                 new CallBackModel()
@@ -1877,7 +1887,7 @@ namespace NewBot
 
                                         #region Ads
                                         case TagType.Ads:
-                                            SendToAdmins(
+                                            await SendToAdmins(
                                                 ProjectMode.Ads,
                                                 ButtonMode.AcceptBlockReject,
                                                 new CallBackModel()
@@ -1930,7 +1940,6 @@ namespace NewBot
                 throw;
             }
         }
-
         public async Task<string> LinkProccessAsync(string link)
         {
             if (link.StartsWith("@"))
@@ -2189,8 +2198,6 @@ namespace NewBot
                     {
                         if (user.projectstep == 0 && user.adsStep == 0 || user.projectstep == null && user.adsStep == null)
                         {
-                            var getagent = controller.GetAgent(new agent() { agentuid = s.Message.From.Id.ToString() });
-                            bool IsFree = false;
                             if (s.Message.Text == "اگهی استخدام")
                             {
                                 controller.AddNewRec(new HireList() { employeeID = user.uID, hirefinished = false });
