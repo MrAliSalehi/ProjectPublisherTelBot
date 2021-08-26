@@ -75,6 +75,14 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <Property Name="FreeBalance" Type="int" />
           <Property Name="UsedBalance" Type="int" />
         </EntityType>
+        <EntityType Name="CallBacks">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Identifier" Type="varchar" MaxLength="150" Nullable="false" />
+          <Property Name="CallBack" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="HireList">
           <Key>
             <PropertyRef Name="ID" />
@@ -145,6 +153,7 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <EntitySet Name="AdsGroup" EntityType="Self.AdsGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ADSList" EntityType="Self.ADSList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="agents" EntityType="Self.agents" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CallBacks" EntityType="Self.CallBacks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HireList" EntityType="Self.HireList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Images" EntityType="Self.Images" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Projects" EntityType="Self.Projects" Schema="dbo" store:Type="Tables" />
@@ -191,6 +200,7 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <EntitySet Name="AdsChannels" EntityType="telbotZB_dbModel.AdsChannel" />
           <EntitySet Name="AdsGroups" EntityType="telbotZB_dbModel.AdsGroup" />
           <EntitySet Name="AdsBusinesses" EntityType="telbotZB_dbModel.AdsBusiness" />
+          <EntitySet Name="CallBacks" EntityType="telbotZB_dbModel.CallBack" />
           </EntityContainer>
         <EntityType Name="Project">
           <Key>
@@ -303,6 +313,14 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
           <Property Name="PictureUID" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <Property Name="Discription" Type="String" MaxLength="550" FixedLength="false" Unicode="true" />
           <Property Name="Published" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="CallBack">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Identifier" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="CallBack1" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -447,6 +465,15 @@ warning 6002: The table/view 'telbotZB_db.dbo.admins' does not have a primary ke
                 <ScalarProperty Name="PictureUID" ColumnName="PictureUID" />
                 <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
                 <ScalarProperty Name="uID" ColumnName="uID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CallBacks">
+            <EntityTypeMapping TypeName="telbotZB_dbModel.CallBack">
+              <MappingFragment StoreEntitySet="CallBacks">
+                <ScalarProperty Name="CallBack1" ColumnName="CallBack" />
+                <ScalarProperty Name="Identifier" ColumnName="Identifier" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

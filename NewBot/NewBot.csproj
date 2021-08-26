@@ -82,6 +82,7 @@
     <Compile Include="Models\Controller\DbController.cs" />
     <Compile Include="Models\CustomModel\AdsModel.cs" />
     <Compile Include="Models\CustomModel\CallBackModel.cs" />
+    <Compile Include="Models\CustomModel\CancelationModel.cs" />
     <Compile Include="Models\CustomModel\MessageDataViewModel.cs" />
     <Compile Include="Models\CustomModel\TagViewModel.cs" />
     <Compile Include="Models\Model\admin.cs">
@@ -100,6 +101,9 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Model\agent.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Model\CallBack.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Model\HireList.cs">

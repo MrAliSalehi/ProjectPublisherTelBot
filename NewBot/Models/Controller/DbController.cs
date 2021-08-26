@@ -777,8 +777,6 @@ namespace NewBot.Models.Controller
 
         #region AdsController
 
-        #region Ads CUID
-
         #region SelctionController
         public async Task<AdsOutPutModel> AdsAsync(AdsModel model)
         {
@@ -1013,13 +1011,12 @@ namespace NewBot.Models.Controller
                                 #region Delete
                                 case AdsOperation.Delete:
                                     Out.OutPutType = OutPutType.BOOL;
-                                    var isExists = await db.AdsBusinesses.FirstOrDefaultAsync(p =>
-                                        p.uID == model.AdsBusiness.uID && p.ProjectID == model.AdsBusiness.ProjectID);
-                                    if (isExists != null)
+                                    if (await db.AdsBusinesses.AnyAsync(p => p.uID == model.AdsBusiness.uID && p.ProjectID == model.AdsBusiness.ProjectID))
                                     {
+                                        var isExists = await db.AdsBusinesses.FirstOrDefaultAsync(p => p.uID == model.AdsBusiness.uID && p.ProjectID == model.AdsBusiness.ProjectID);
                                         db.AdsBusinesses.Remove(isExists);
                                         await db.SaveChangesAsync();
-                                        Out.OutPut = false;
+                                        Out.OutPut = true;
                                     }
                                     else
                                     {
@@ -1046,6 +1043,8 @@ namespace NewBot.Models.Controller
         }
         #endregion
 
+        #region List
+
         #region Get
         public List<ADSList> GetUserAdsList(ADSList ads)
         {
@@ -1054,7 +1053,7 @@ namespace NewBot.Models.Controller
                 using (var db = new telbotZB_dbEntities())
                 {
                     var res = db.ADSLists.Where(p => p.uID == ads.uID).ToList();
-                    if (res == null)
+                    if (res.Count > 0)
                     {
                         return null;
                     }
@@ -1067,22 +1066,6 @@ namespace NewBot.Models.Controller
             catch (Exception)
             {
 
-                throw;
-            }
-        }
-        public ADSList GetAds(ADSList ads)
-        {
-            try
-            {
-                using (telbotZB_dbEntities db = new telbotZB_dbEntities())
-                {
-                    ads = db.ADSLists.Where(p => p.uID == ads.uID && p.GUID == ads.GUID).Select(p => p).ToList().SingleOrDefault();
-                    return ads;
-                }
-            }
-            catch (Exception)
-            {
-                //fm.ExeptionHandler($"DbController>>GetUser>>1nd TryCatch Throwed.[{exp.Message}]", 30);
                 throw;
             }
         }
@@ -1123,67 +1106,7 @@ namespace NewBot.Models.Controller
         }
         #endregion
 
-        #region Insert
-        public bool InsertNewAds(ADSList ads)
-        {
-            try
-            {
-                using (telbotZB_dbEntities db = new telbotZB_dbEntities())
-                {
-                    if (!db.ADSLists.Any(p => p.uID == ads.uID && p.link == null && p.discription == null && p.GUID == null))
-                    {
-                        db.ADSLists.Add(new ADSList() { uID = ads.uID, OneLiner = ads.OneLiner });
-                        db.SaveChanges();
-                    }
-                    return true;
-                }
-            }
-            catch (Exception)
-            {
-                //fm.ExeptionHandler($"DbController>>InsertNewUser>>1nd TryCatch Throwed.[{exp.Message}]", 45);
-                throw;
-            }
-        }
-        #endregion
-
         #region Update
-        public bool UpdateAds(ADSList ads)
-        {
-            try
-            {
-                using (telbotZB_dbEntities db = new telbotZB_dbEntities())
-                {
-                    var result = db.ADSLists.SingleOrDefault(b => b.uID == ads.uID && ads.discription != null ? b.discription == null : true && ads.link != null ? b.link == null : true && ads.pic != null ? b.pic == null : true);
-                    if (result != null)
-                    {
-                        if (ads.pic != null)
-                        {
-                            result.pic = ads.pic;
-                        }
-                        if (ads.link != null)
-                        {
-                            result.link = ads.link;
-                        }
-                        if (ads.discription != null)
-                        {
-                            result.discription = ads.discription;
-                        }
-                        if (ads.GUID != null)
-                        {
-                            result.GUID = ads.GUID;
-                        }
-                    }
-                    db.SaveChanges();
-                    return true;
-                }
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
         public bool UpdateAdsByIDList(List<int> idies)
         {
             try
@@ -1207,9 +1130,10 @@ namespace NewBot.Models.Controller
             }
         }
         #endregion
+
         #endregion
 
-        #region AdsImageController
+        #region ImageController
 
         #region Get
         public async Task<Image> GetImageAsync(Image img)
@@ -1259,8 +1183,54 @@ namespace NewBot.Models.Controller
         }
         #endregion
 
+        #region Delete
+
+        public async Task<bool> DeleteImageAsync(Image img)
+        {
+            using (var db = new telbotZB_dbEntities())
+            {
+                if (await db.Images.AnyAsync(p => p.uID == img.uID && p.ProjectID == img.ProjectID))
+                {
+                    var find = await db.Images.FirstOrDefaultAsync(p =>
+                        p.uID == img.uID && p.ProjectID == img.ProjectID);
+                    db.Images.Remove(find);
+                    await db.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+        }
+
         #endregion
 
+        #endregion
+
+        #endregion
+
+        #region CallBackController
+
+        public async Task<CallBack> GetCallBackAsync(CallBack c)
+        {
+            using (var db = new telbotZB_dbEntities())
+            {
+                var find = await db.CallBacks.FirstOrDefaultAsync(p => p.Identifier == c.Identifier);
+                if (find != null)
+                {
+                    return find;
+                }
+                return null;
+            }
+        }
+
+        public async Task<bool> AddCallBackAsync(CallBack c)
+        {
+            using (var db = new telbotZB_dbEntities())
+            {
+                db.CallBacks.Add(new CallBack() { Identifier = c.Identifier, CallBack1 = c.CallBack1 });
+                await db.SaveChangesAsync();
+                return true;
+            }
+        }
         #endregion
 
         #region AdminsController

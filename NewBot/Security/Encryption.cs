@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
+using NewBot.Models.Controller;
+using NewBot.Models.Model;
 using NewBot.Security.Extensions;
 
 namespace NewBot.Security
@@ -73,7 +77,7 @@ namespace NewBot.Security
                             FinalKey += Byte;
                         }
 
-                        string s = BytedData.RsaEncryption(Rsa.ExportParameters(false),false).ByteToString().KeyShorter();
+                        string s = BytedData.RsaEncryption(Rsa.ExportParameters(false), false).ByteToString();
                         return FinalKey;
                     case Type.Decrypt:
                         byte[] deCryptedData = Decrypt(encryptionModel.DataToDecrypt, Rsa.ExportParameters(true), true);
@@ -135,7 +139,7 @@ namespace NewBot.Security.Extensions
             }
         }
 
-        
+
     }
 
     public static class CryptionExtensions
@@ -149,6 +153,27 @@ namespace NewBot.Security.Extensions
         public static string KeyShorter(this string LongKey)
         {
             return null;
+        }
+    }
+}
+
+namespace NewBot.Security.Extensions.CallBacks
+{
+    public static class CallBackExtensions
+    {
+        private static DbController _db = new DbController();
+
+        public static async Task<string> CallBackHandlerAsync(this string CallBackText)
+        {
+            string[] getIdentifierByStar = CallBackText.Split('*');
+            await _db.AddCallBackAsync(new CallBack() { Identifier = getIdentifierByStar[3], CallBack1 = CallBackText });
+            return $"$={getIdentifierByStar[3]}";
+        }
+
+        public static async Task<string> CallBackReaderAsync(this string Identifier)
+        {
+            var getCallBack = await _db.GetCallBackAsync(new CallBack() { Identifier = Identifier.Remove(0, 2) });
+            return getCallBack.CallBack1;
         }
     }
 }
