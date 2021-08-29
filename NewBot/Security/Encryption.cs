@@ -138,8 +138,6 @@ namespace NewBot.Security.Extensions
                 return null;
             }
         }
-
-
     }
 
     public static class CryptionExtensions
