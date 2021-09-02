@@ -1000,6 +1000,8 @@ namespace NewBot
 
                     #endregion
                 }
+
+                #region Catch-1
                 catch (Exception x) when (x.Message.ToLower().Contains("null"))
                 {
                     foreach (var admin in AdminList)
@@ -1008,6 +1010,9 @@ namespace NewBot
                             $"مشگلی در اگهیه ارسال شده وجود دارد :\n {x.Message}");
                     }
                 }
+                #endregion
+
+                #region Catch-2
                 catch (NullReferenceException nullex) when (nullex.Message.ToLower().Contains("null") ||
                                                             (nullex.Data.ToString().ToLower().Contains("null")))
                 {
@@ -1017,6 +1022,9 @@ namespace NewBot
                             $"Null Refrence On CallBack Catched :\n {nullex.Message}");
                     }
                 }
+                #endregion
+
+                #region Catch
                 catch
                 {
                     foreach (var admin in AdminList)
@@ -1024,6 +1032,7 @@ namespace NewBot
                         await bot.SendTextMessageAsync(admin.uID, $"Something Catched On CallBack,ReCheckSource:OCBQ-1TC--Last[C]");
                     }
                 }
+                #endregion
             }
             #endregion
         }
@@ -1560,7 +1569,7 @@ namespace NewBot
                             {
                                 string CallbackQuery = "";
                                 bool b = int.TryParse(adscount[1], out int adsnumber);
-                                adsnumber = b == true ? adsnumber : 7;
+                                adsnumber = b ? adsnumber : 7;
                                 var getads = controller.GetUnPublishedAds();
                                 foreach (var ads in getads)
                                 {
