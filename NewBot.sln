@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewBot", "NewBot\NewBot.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoTest", "..\NewBot.Test\BoTest\BoTest.csproj", "{6BEF1DDC-62F2-4606-8E3F-3BE690EAE0EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewBot.Schedule", "..\NewBot.Schedule\NewBot.Schedule\NewBot.Schedule.csproj", "{D251BD57-988B-470E-8DA1-7E5070FF0C50}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewBot.ScheduleServer", "..\NewBot.ScheduleServer\NewBot.ScheduleServer\NewBot.ScheduleServer.csproj", "{4FA67B82-2BA7-42FC-8C1B-8440F1302EAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{6BEF1DDC-62F2-4606-8E3F-3BE690EAE0EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BEF1DDC-62F2-4606-8E3F-3BE690EAE0EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BEF1DDC-62F2-4606-8E3F-3BE690EAE0EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D251BD57-988B-470E-8DA1-7E5070FF0C50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D251BD57-988B-470E-8DA1-7E5070FF0C50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D251BD57-988B-470E-8DA1-7E5070FF0C50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D251BD57-988B-470E-8DA1-7E5070FF0C50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FA67B82-2BA7-42FC-8C1B-8440F1302EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FA67B82-2BA7-42FC-8C1B-8440F1302EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FA67B82-2BA7-42FC-8C1B-8440F1302EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FA67B82-2BA7-42FC-8C1B-8440F1302EAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
