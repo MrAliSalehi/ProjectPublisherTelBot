@@ -1943,13 +1943,12 @@ namespace NewBot
                     #endregion
                 }
             }
-            catch (Exception)
+            catch (Exception x)
             {
-
-                throw;
+               await bot.SendTextMessageAsync(Admin, $"user:[{e.Message.From.Id}]\n[{x.Message}]");
             }
         }
-        public async Task<string> LinkProccessAsync(string link)
+        public async Task<string> LinkProcessAsync(string link)
         {
             if (link.StartsWith("@"))
             {
